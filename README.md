@@ -1,4 +1,4 @@
-***Vst3_Ada***
+**Vst3_Ada**
 
 A Pure Ada Implementation of the VST3 API.
 
