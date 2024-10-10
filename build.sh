@@ -8,13 +8,17 @@ if [ ! -d ./lib ]; then
     mkdir lib
 fi
 
-pushd lib
-     rm -rf *
-popd
+if [ -d ./lib ]; then 
+    pushd lib
+         rm -rf *
+    popd
+fi
 
-pushd obj
-     rm -rf *
-popd
+if [ -d ./obj ]; then 
+    pushd obj
+        rm -rf *
+    popd
+fi
 
 gprbuild -g --no-complete-output -Pvst3
 
