@@ -4,5 +4,7 @@
    for Library_Name use "sami";
    for Library_Dir use "lib";
    for Library_Kind use "dynamic";
-   for Library_Interface use ("vst3_entry");
+   for Library_Interface use ("Vst3_Entry",
+                              "Vst3",
+                              "Vst3.I_Plugin_Factory_3");
 end Vst3;
