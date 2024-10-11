@@ -2,9 +2,9 @@
 package Vst3.I_Plugin_Factory_3 is 
    type I_Plugin_Factory_3;
 
-   type P_Factory_Info_Vendor is array (0 .. 63) of aliased char;
-   type P_Factory_Info_Url is array (0 .. 255) of aliased char;
-   type P_Factory_Info_Email is array (0 .. 127) of aliased char;
+   type P_Factory_Info_Vendor is array (1 .. 64) of aliased char;
+   type P_Factory_Info_Url is array (1 .. 256) of aliased char;
+   type P_Factory_Info_Email is array (1 .. 128) of aliased char;
    type P_Factory_Info is record
       Vendor   : aliased P_Factory_Info_Vendor;
       Url      : aliased P_Factory_Info_Url;
@@ -13,29 +13,31 @@ package Vst3.I_Plugin_Factory_3 is
    end record
    with Convention => C_Pass_By_Copy;
 
-   type P_Class_Info_Category is array (0 .. 31) of aliased char;
-   type P_Class_Info_Name is array (0 .. 63) of aliased char;
+   function Make_Factory_Info (Vendor : String; Url : String; Email : String; Flags : Int) return P_Factory_Info;
+
+   type P_Class_Info_Category is array (1 .. 32) of aliased char;
+   type P_Class_Info_Name is array (1 .. 64) of aliased char;
    type P_Class_Info is record
-      cid         : aliased TUID;  
-      cardinality : aliased Int;  
-      category    : aliased P_Class_Info_Category;  
-      name        : aliased P_Class_Info_Name;  
+      cid         : aliased TUID := (others => nul);  
+      cardinality : aliased Int := 0;  
+      category    : aliased P_Class_Info_Category := (others => nul);  
+      name        : aliased P_Class_Info_Name := (others => nul);  
    end record
    with Convention => C_Pass_By_Copy;
 
    type P_Class_Info_2 is record
-      cid         : aliased TUID;  
-      cardinality : aliased Int;  
-      category    : aliased P_Class_Info_Category;  
-      name        : aliased P_Class_Info_Name;  
+      cid         : aliased TUID := (others => nul);  
+      cardinality : aliased Int := 0;  
+      category    : aliased P_Class_Info_Category := (others => nul);  
+      name        : aliased P_Class_Info_Name := (others => nul);  
    end record
    with Convention => C_Pass_By_Copy;
 
    type P_Class_Info_W is record
-      cid         : aliased TUID;  
-      cardinality : aliased Int;  
-      category    : aliased P_Class_Info_Category;  
-      name        : aliased P_Class_Info_Name;  
+      cid         : aliased TUID := (others => nul);  
+      cardinality : aliased Int := 0;  
+      category    : aliased P_Class_Info_Category := (others => nul);  
+      name        : aliased P_Class_Info_Name := (others => nul);  
    end record
    with Convention => C_Pass_By_Copy;
 
