@@ -1,12 +1,12 @@
 with System;
 with Vst3; 
-with Vst3.I_Plugin_Factory_3;  use Vst3.I_Plugin_Factory_3;
+with Vst3.Factory;  use Vst3.Factory;
 
 package Vst3_Entry is 
    use System;
-   Factory: access I_Plugin_Factory_3;
+   Factory: access Plugin_Factory;
 
-   function Get_Plugin_Factory return access I_Plugin_Factory_3
+   function Get_Plugin_Factory return access Plugin_Factory
       with 
          Global => (Factory),
          Convention => C,

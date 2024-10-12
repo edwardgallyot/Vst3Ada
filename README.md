@@ -20,3 +20,7 @@ WIP.
     - https://github.com/juce-framework/JUCE
     - JUCE is pretty relaxed about what it'll try load and you can step through the
       loading process to see what's going on.
+
+* Inspiring Audio Projects:
+    - https://github.com/Tremus/CPLUG/tree/master CPLUG is great and has a really
+      simple implementation of the VST3 API.

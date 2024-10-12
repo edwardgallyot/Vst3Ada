@@ -17,9 +17,7 @@ package Vst3 is
    type TUID is array (1 .. 16) of aliased char;
 
 
-   function Make_TUID (One: Unsigned_32; Two: Unsigned_32; Three: Unsigned_32; Four: Unsigned_32) return TUID;
-
-   type C_String is new chars_ptr;
+   function Make_TUID (One : Unsigned_32; Two : Unsigned_32; Three : Unsigned_32; Four : Unsigned_32) return TUID;
 
    -- NOTE(edg): WIN32: This may not work see vst3_c_api.h:223
    type Result is (
@@ -44,13 +42,11 @@ package Vst3 is
       Out_Of_Memory => 6
    );
 
-   type F_Unknown is record
-      Query_Interface   : access function (This : access F_Unknown; Iid  : C_String; Obj  : Address) return Result with Convention => C;
-      Add_Ref           : access function (This : access F_Unknown) return Unsigned with Convention => C;
-      Release           : access function (This : access F_Unknown) return Unsigned with Convention => C;
+   type Unknown is record
+      Query_Interface   : access function (This : access Unknown; Interface_Id : TUID; Obj : Address) return Result with Convention => C;
+      Add_Ref           : access function (This : access Unknown) return Unsigned with Convention => C;
+      Release           : access function (This : access Unknown) return Unsigned with Convention => C;
    end record
    with Convention => C_Pass_By_Copy;
 
-   type F_Unknown_Ref_Count is mod 2 ** Standard'Address_Size;
-   procedure Say_Hi;
 end Vst3;

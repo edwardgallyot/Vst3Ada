@@ -20,7 +20,7 @@ if [ -d ./obj ]; then
     popd
 fi
 
-gprbuild -g --no-complete-output -Pvst3
+gprbuild -g -gnat2022 --no-complete-output -Pvst3
 
 if [ -e ./lib/libsami.so ]; then 
     cp ./lib/libsami.so ./lib/sami.vst3
