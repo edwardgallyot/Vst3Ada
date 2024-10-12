@@ -4,8 +4,5 @@ project Vst3 is
    for Library_Name use "sami";
    for Library_Dir use "lib";
    for Library_Kind use "dynamic";
-   for Library_Interface use ("Vst3",
-                              "Vst3_Entry",
-                              "Vst3.Factory",
-                              "Vst3.Plugin");
+   for Library_Interface use ("Vst3_Entry");
 end Vst3;

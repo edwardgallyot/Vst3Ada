@@ -1,18 +1,24 @@
 with Vst3; 
 with Vst3.Factory;
 with System;
+with Interfaces.C; use Interfaces.C;
 
 package body Vst3_Entry is 
    use System;
    use Vst3.Factory;
+   Factory : access Plugin_Factory;
 
-   function Get_Plugin_Factory return access Plugin_Factory is 
+   function Get_Plugin_Factory return System.Address is 
    begin
       if Factory = null then
          Factory := new Plugin_Factory;
-      -- else
-         -- Factory.V_Table.Add_Ref.'Access (Factory);
+      else
+         declare 
+            Dummy : Unsigned := Add_Ref (Factory);
+         begin
+            null;
+         end;
       end if;
-      return Factory;
+      return Factory.all'Address;
    end Get_Plugin_Factory;
 end Vst3_Entry;
