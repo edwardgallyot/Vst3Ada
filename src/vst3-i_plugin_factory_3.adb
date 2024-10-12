@@ -1,15 +1,25 @@
-
 with Vst3.I_Plugin_Factory_3;
+with System.Address_To_Access_Conversions;
+
 package body Vst3.I_Plugin_Factory_3 is 
 
    function Make_Factory_Info (Vendor : String; Url : String; Email : String; Flags : Int) return P_Factory_Info is 
-      Factory_Info : P_Factory_Info := (Flags => Flags, Vendor => (others => nul), Email => (others => nul), Url => (others => nul));
+      Info : P_Factory_Info := (Flags => Flags, Vendor => (others => nul), Email => (others => nul), Url => (others => nul));
    begin
-      for I in Vendor'Range loop Factory_Info.Vendor (I) := To_C (Vendor (I)); end loop;
-      for I in Email'Range loop Factory_Info.Email (I) := To_C (Email (I)); end loop;
-      for I in Url'Range loop Factory_Info.Url (I) := To_C (Url (I)); end loop;
-      return Factory_Info;
+      for I in Vendor'Range loop Info.Vendor (I) := To_C (Vendor (I)); end loop;
+      for I in Email'Range loop Info.Email (I) := To_C (Email (I)); end loop;
+      for I in Url'Range loop Info.Url (I) := To_C (Url (I)); end loop;
+      return Info;
    end Make_Factory_Info;
+
+   function Make_Class_Info (Cid : String; Cardinality : Int; Category : String; Name : String) return P_Class_Info is
+      Info : P_Class_Info := (Cid => (others => nul), Cardinality => Cardinality, Name => (others => nul), Category => (others => nul));
+   begin
+      for I in Cid'Range loop Info.Cid (I) := To_C (Cid (I)); end loop;
+      for I in Category'Range loop Info.Category (I) := To_C (Category (I)); end loop;
+      for I in Name'Range loop Info.Name (I) := To_C (Name (I)); end loop;
+      return Info;
+   end Make_Class_Info;
 
    function Add_Ref (This : access I_Plugin_Factory_3) return Unsigned is 
    begin
@@ -21,13 +31,22 @@ package body Vst3.I_Plugin_Factory_3 is
    function Release (This : access I_Plugin_Factory_3) return Unsigned is 
    begin
       Put_Line("Release");
+      This.Ref_Count := This.Ref_Count - 1;
       return 0;
    end Release;
 
-   function Query_Interface (This : access I_Plugin_Factory_3; iid  : C_String; obj  : Address) return Result is
+   function Query_Interface (This : access I_Plugin_Factory_3; iid : TUID; obj  : access Address) return Result is
    begin
       Put_Line("Query Interface");
-      return Ok_True;
+
+      if iid = I_Plugin_Factory_3_IID or
+         iid = I_Plugin_Factory_2_IID or
+         iid = I_Plugin_Factory_IID   then
+         obj.all := This.all'Address;
+         return Ok_True;
+      end if;
+
+      return No_Interface;
    end Query_Interface;
 
    function Count_Classes (This : access I_Plugin_Factory_3) return Int is
@@ -45,7 +64,7 @@ package body Vst3.I_Plugin_Factory_3 is
 
    function Get_Class_Info (This : access I_Plugin_Factory_3; Index : Int; Info: access P_Class_Info) return Result is
    begin
-      Put_Line("Get Class Info");
+      Info.all := Make_Class_Info("Alright boizy", 0, "Audio Module Class", "Sami");
       return Ok_True;
    end Get_Class_Info;
 

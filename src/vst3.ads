@@ -3,12 +3,21 @@ with Interfaces.C;
 with System;
 with Interfaces.C;
 with Interfaces.C.Strings;
+with Interfaces;
 
 package Vst3 is 
    use Interfaces.C;
    use Interfaces.C.Strings;
+   use Interfaces;
    use System;
    use Ada.Text_IO;
+
+   -- NOTE(edg): WIN32: This may not work on win32 see vst3_c_api.h:40
+   type TUID_Part is mod 2 ** 32;
+   type TUID is array (1 .. 16) of aliased char;
+
+
+   function Make_TUID (One: Unsigned_32; Two: Unsigned_32; Three: Unsigned_32; Four: Unsigned_32) return TUID;
 
    type C_String is new chars_ptr;
 
@@ -43,6 +52,5 @@ package Vst3 is
    with Convention => C_Pass_By_Copy;
 
    type F_Unknown_Ref_Count is mod 2 ** Standard'Address_Size;
-   type TUID is array (0 .. 15) of aliased char;
    procedure Say_Hi;
 end Vst3;

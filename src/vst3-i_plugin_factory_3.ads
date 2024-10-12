@@ -2,6 +2,11 @@
 package Vst3.I_Plugin_Factory_3 is 
    type I_Plugin_Factory_3;
 
+   I_Plugin_Factory_3_IID : constant TUID := Make_TUID (16#4555A2AB#, 16#C1234E57#, 16#9B122910#, 16#36878931#);
+   I_Plugin_Factory_2_IID : constant TUID := Make_TUID (16#0007B650#, 16#F24B4C0B#, 16#A464EDB9#, 16#F00B2ABB#);
+   I_Plugin_Factory_IID   : constant TUID := Make_TUID (16#7A4D811C#, 16#52114A1F#, 16#AED9D2EE#, 16#0B43BF9F#);
+   F_Unknown_IID          : constant TUID := Make_TUID (16#00000000#, 16#00000000#, 16#C0000000#, 16#00000046#);
+
    type P_Factory_Info_Vendor is array (1 .. 64) of aliased char;
    type P_Factory_Info_Url is array (1 .. 256) of aliased char;
    type P_Factory_Info_Email is array (1 .. 128) of aliased char;
@@ -18,26 +23,28 @@ package Vst3.I_Plugin_Factory_3 is
    type P_Class_Info_Category is array (1 .. 32) of aliased char;
    type P_Class_Info_Name is array (1 .. 64) of aliased char;
    type P_Class_Info is record
-      cid         : aliased TUID := (others => nul);  
-      cardinality : aliased Int := 0;  
-      category    : aliased P_Class_Info_Category := (others => nul);  
-      name        : aliased P_Class_Info_Name := (others => nul);  
+      Cid         : aliased TUID := (others => nul);  
+      Cardinality : aliased Int := 0;  
+      Category    : aliased P_Class_Info_Category := (others => nul);  
+      Name        : aliased P_Class_Info_Name := (others => nul);  
    end record
    with Convention => C_Pass_By_Copy;
+   
+   function Make_Class_Info (Cid : String; Cardinality : Int; Category : String; Name : String) return P_Class_Info;
 
    type P_Class_Info_2 is record
-      cid         : aliased TUID := (others => nul);  
-      cardinality : aliased Int := 0;  
-      category    : aliased P_Class_Info_Category := (others => nul);  
-      name        : aliased P_Class_Info_Name := (others => nul);  
+      Cid         : aliased TUID := (others => nul);  
+      Cardinality : aliased Int := 0;  
+      Category    : aliased P_Class_Info_Category := (others => nul);  
+      Name        : aliased P_Class_Info_Name := (others => nul);  
    end record
    with Convention => C_Pass_By_Copy;
 
    type P_Class_Info_W is record
-      cid         : aliased TUID := (others => nul);  
-      cardinality : aliased Int := 0;  
-      category    : aliased P_Class_Info_Category := (others => nul);  
-      name        : aliased P_Class_Info_Name := (others => nul);  
+      Cid         : aliased TUID := (others => nul);  
+      Cardinality : aliased Int := 0;  
+      Category    : aliased P_Class_Info_Category := (others => nul);  
+      Name        : aliased P_Class_Info_Name := (others => nul);  
    end record
    with Convention => C_Pass_By_Copy;
 
@@ -49,7 +56,7 @@ package Vst3.I_Plugin_Factory_3 is
       return Unsigned
       with Convention => C;
 
-   function Query_Interface (This : access I_Plugin_Factory_3; Iid  : C_String; Obj : Address) 
+   function Query_Interface (This : access I_Plugin_Factory_3; Iid : TUID; Obj : access Address) 
       return Result
       with Convention => C;
 
@@ -82,7 +89,7 @@ package Vst3.I_Plugin_Factory_3 is
       with Convention => C;
 
    type I_Plugin_Factory_3_V_Table is record
-      Query_Interface   : access function (This : access I_Plugin_Factory_3; Iid  : C_String; Obj  : Address) return Result with Convention => C;
+      Query_Interface   : access function (This : access I_Plugin_Factory_3; Iid : TUID; Obj : access Address) return Result with Convention => C;
       Add_Ref           : access function (This : access I_Plugin_Factory_3) return Unsigned with Convention => C;
       Release           : access function (This : access I_Plugin_Factory_3) return Unsigned with Convention => C;
       Get_Factory_Info  : access function (This : access I_Plugin_Factory_3; Info : access P_Factory_Info) return Result with Convention => C;
