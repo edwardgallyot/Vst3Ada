@@ -7,4 +7,5 @@ package Vst3_Entry is
          Convention => C,
          Export,
          External_Name => "GetPluginFactory";
+
 end Vst3_Entry;

@@ -10,6 +10,8 @@ WIP.
     - https://www.adacore.com/gems/gem-109-ada-plug-ins-and-shared-libraries-part-1
     - https://www.adacore.com/gems/gem-110-ada-plug-ins-and-shared-libraries-part-2
     - https://gcc.gnu.org/onlinedocs/gcc-4.7.4/gnat_ugn_unw/Building-a-library.html
+    - https://docs.adacore.com/gprbuild-docs/html/gprbuild_ug/gnat_project_manager.html#h3.15
+    - https://gcc.gnu.org/onlinedocs/gnat_ugn/Building-a-Stand-alone-Library.html
 
 * Inspiring Ada Projects:
     - https://github.com/tsoding/eepers

@@ -1,11 +1,9 @@
-with Vst3; 
-with Vst3.Factory;
-with System;
+with Vst3; use Vst3;
+with Vst3.Factory; use Vst3.Factory;
+with System; use System;
 with Interfaces.C; use Interfaces.C;
 
 package body Vst3_Entry is 
-   use System;
-   use Vst3.Factory;
    Factory : access Plugin_Factory;
 
    function Get_Plugin_Factory return System.Address is 
