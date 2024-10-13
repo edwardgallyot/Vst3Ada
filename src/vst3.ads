@@ -19,6 +19,7 @@ package Vst3 is
 
    function Make_TUID (One : Unsigned_32; Two : Unsigned_32; Three : Unsigned_32; Four : Unsigned_32) return TUID;
 
+
    -- NOTE(edg): WIN32: This may not work see vst3_c_api.h:223
    type Result is (
       No_Interface,

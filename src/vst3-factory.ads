@@ -1,12 +1,8 @@
 with System.Atomic_Counters; use System.Atomic_Counters;
 
 package Vst3.Factory is 
-   type Plugin_Factory;
 
-   I_Plugin_Factory_3_IID : constant TUID := Make_TUID (16#4555A2AB#, 16#C1234E57#, 16#9B122910#, 16#36878931#);
-   I_Plugin_Factory_2_IID : constant TUID := Make_TUID (16#0007B650#, 16#F24B4C0B#, 16#A464EDB9#, 16#F00B2ABB#);
-   I_Plugin_Factory_IID   : constant TUID := Make_TUID (16#7A4D811C#, 16#52114A1F#, 16#AED9D2EE#, 16#0B43BF9F#);
-   F_Unknown_IID          : constant TUID := Make_TUID (16#00000000#, 16#00000000#, 16#C0000000#, 16#00000046#);
+   type Plugin_Factory;
 
    Cardinality_Many_Instances : constant Int := 16#7FFFFFFF#;
 
@@ -129,6 +125,10 @@ package Vst3.Factory is
    end record
    with Convention => C_Pass_By_Copy;
 
+   I_Plugin_Factory_3_IID : constant TUID := Make_TUID (16#4555A2AB#, 16#C1234E57#, 16#9B122910#, 16#36878931#);
+   I_Plugin_Factory_2_IID : constant TUID := Make_TUID (16#0007B650#, 16#F24B4C0B#, 16#A464EDB9#, 16#F00B2ABB#);
+   I_Plugin_Factory_IID   : constant TUID := Make_TUID (16#7A4D811C#, 16#52114A1F#, 16#AED9D2EE#, 16#0B43BF9F#);
+   F_Unknown_IID          : constant TUID := Make_TUID (16#00000000#, 16#00000000#, 16#C0000000#, 16#00000046#);
    type Plugin_Factory is record
       V_Table: access I_Plugin_Factory_3_V_Table := new I_Plugin_Factory_3_V_Table'(
          Query_Interface   => Query_Interface'Access,

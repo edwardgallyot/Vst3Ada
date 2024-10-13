@@ -116,8 +116,9 @@ package body Vst3.Factory is
 
    function Get_Class_Info (This : access Plugin_Factory; Index : Int; Info: access Class_Info) return Result is
       Class_Id : constant TUID := Make_TUID(1, 0, 0, 0);
+      Info_To_Copy : constant Class_Info := Make_Class_Info(Class_Id, Cardinality_Many_Instances, "Audio Module Class", "Sami");
    begin
-      Info.all := Make_Class_Info(Class_Id, Cardinality_Many_Instances, "Audio Module Class", "Sami");
+      Info.all := Info_To_Copy;
       return Ok_True;
    end Get_Class_Info;
 
@@ -125,12 +126,15 @@ package body Vst3.Factory is
    function Create_Instance (This : access Plugin_Factory; Class_Id : TUID; Interface_Id : TUID; Obj : access Address) return Result is 
       Class_TUID : constant TUID := Make_TUID(1, 0, 0, 0);
       Instance : access Component;
+      Ignore : Unsigned;
    begin
       Put_Line("Create Instance");
       if Class_Id = Class_TUID then 
          if Interface_Id = F_Unknown_IID or Interface_Id = I_Component_IID then
+            -- TODO(edg): This should be a "Plugin" not a standalone Component, we'll get there tho.
             Instance := new Component;
-            Obj.all := Instance.all'Address;
+            Ignore   := Vst3.Plugin.Add_Ref (Instance);
+            Obj.all  := Instance.all'Address;
             return Ok_True;
          end if; 
       end if;
