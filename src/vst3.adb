@@ -4,6 +4,34 @@ with Interfaces; use Interfaces;
 with Ada.Unchecked_Conversion;
 
 package body Vst3 is 
+   function To_C (Src: String) return C_String_32 is
+      Res : C_String_32 := (others => nul);
+   begin
+      for I in Src'Range loop Res (I) := To_C (Src (I)); end loop;
+      return Res;
+   end To_C;
+
+   function To_C (Src: String) return C_String_64 is
+      Res : C_String_64 := (others => nul);
+   begin
+      for I in Src'Range loop Res (I) := To_C (Src (I)); end loop;
+      return Res;
+   end To_C;
+
+   function To_C (Src: String) return C_String_128 is
+      Res : C_String_128 := (others => nul);
+   begin
+      for I in Src'Range loop Res (I) := To_C (Src (I)); end loop;
+      return Res;
+   end To_C;
+
+   function To_C (Src: String) return C_String_256 is
+      Res : C_String_256 := (others => nul);
+   begin
+      for I in Src'Range loop Res (I) := To_C (Src (I)); end loop;
+      return Res;
+   end To_C;
+
    function Make_TUID (One: Unsigned_32; Two: Unsigned_32; Three: Unsigned_32; Four: Unsigned_32) return TUID is
       pragma Warnings (Off, "types for unchecked conversion have different sizes");
       function To_Char is new Ada.Unchecked_Conversion(Unsigned_32, char);

@@ -1,22 +1,25 @@
-with Ada.Text_IO;
-with Interfaces.C;
-with System;
-with Interfaces.C;
-with Interfaces.C.Strings;
-with Interfaces;
+with Ada.Text_IO; use Ada.Text_IO;
+with System; use System;
+with Interfaces.C; use Interfaces.C;
+with Interfaces.C.Strings; use Interfaces.C.Strings;
+with Interfaces; use Interfaces;
 
 package Vst3 is 
-   use Interfaces.C;
-   use Interfaces.C.Strings;
-   use Interfaces;
-   use System;
-   use Ada.Text_IO;
 
-   -- NOTE(edg): WIN32: This may not work on win32 see vst3_c_api.h:40
+   type C_String_32 is array (1 .. 32) of aliased char;
+   type C_String_64 is array (1 .. 64) of aliased char;
+   type C_String_128 is array (1 .. 128) of aliased char;
+   type C_String_256 is array (1 .. 256) of aliased char;
+
+   function To_C (Src : String) return C_String_32;
+   function To_C (Src : String) return C_String_64;
+   function To_C (Src : String) return C_String_128;
+   function To_C (Src : String) return C_String_256;
+
    type TUID_Part is mod 2 ** 32;
    type TUID is array (1 .. 16) of aliased char;
 
-
+   -- NOTE(edg): WIN32: This may not work on win32 see vst3_c_api.h:40
    function Make_TUID (One : Unsigned_32; Two : Unsigned_32; Three : Unsigned_32; Four : Unsigned_32) return TUID;
 
 
@@ -43,10 +46,10 @@ package Vst3 is
       Out_Of_Memory => 6
    );
 
-   type Unknown is record
-      Query_Interface   : access function (This : access Unknown; Interface_Id : TUID; Obj : Address) return Result with Convention => C;
-      Add_Ref           : access function (This : access Unknown) return Unsigned with Convention => C;
-      Release           : access function (This : access Unknown) return Unsigned with Convention => C;
+   type F_Unknown is record
+      Query_Interface   : access function (This : access F_Unknown; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
+      Add_Ref           : access function (This : access F_Unknown) return Unsigned with Convention => C;
+      Release           : access function (This : access F_Unknown) return Unsigned with Convention => C;
    end record
    with Convention => C_Pass_By_Copy;
 

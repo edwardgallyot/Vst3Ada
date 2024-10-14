@@ -4,12 +4,12 @@ with System; use System;
 with Interfaces.C; use Interfaces.C;
 
 package body Vst3_Entry is 
-   Factory : access Plugin_Factory;
+   Factory : access Vst3_Factory;
 
    function Get_Plugin_Factory return System.Address is 
    begin
       if Factory = null then
-         Factory := new Plugin_Factory;
+         Factory := new Vst3_Factory;
       else
          declare 
             Dummy : Unsigned := Add_Ref (Factory);
