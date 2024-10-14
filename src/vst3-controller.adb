@@ -57,4 +57,44 @@ package body Vst3.Controller is
       return Ok_True;
    end Get_Parameter_Info;
 
+   function Get_Param_String_By_Value (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value; String : access Wide_Character) return Result is
+   begin
+      return Ok_True;
+   end Get_Param_String_By_Value;
+
+   function Get_Param_Value_By_String (This : access Vst3_Controller; Id : Param_Id; String : access Wide_Character; Value : Param_Value) return Result is
+   begin
+      return Ok_True;
+   end Get_Param_Value_By_String;
+
+   function Normalised_Param_To_Plain (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value  is
+   begin
+      return 0.0;
+   end Normalised_Param_To_Plain;
+
+   function Plain_Param_To_Normalised (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value  is
+   begin
+      return 0.0;
+   end Plain_Param_To_Normalised;
+
+   function Get_Param_Normalised (This : access Vst3_Controller; Id : Param_Id) return Param_Value is
+   begin
+      return 0.0;
+   end Get_Param_Normalised;
+
+   function Set_Param_Normalised (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Result is
+   begin
+      return Ok_True;
+   end Set_Param_Normalised;
+
+   function Set_Component_Handler (This : access Vst3_Controller; Handler : access System.Address) return Result is
+   begin 
+      return Ok_True;
+   end Set_Component_Handler;
+
+   function Create_View (This : access Vst3_Controller; name : TUID) return access System.Address is
+   begin
+      return null;
+   end Create_View;
+
 end Vst3.Controller;

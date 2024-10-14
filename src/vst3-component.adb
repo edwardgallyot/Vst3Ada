@@ -1,5 +1,8 @@
 with System.Atomic_Counters; use System.Atomic_Counters;
 with Vst3; use Vst3;
+with Vst3.Controller; use Vst3.Controller;
+with Vst3.Plugin; use Vst3.Plugin;
+with Ada.Unchecked_Conversion; 
 
 package body Vst3.Component is 
    function Add_Ref (This : access Vst3_Component) return Unsigned is 
@@ -15,10 +18,19 @@ package body Vst3.Component is
    end Release;
 
    function Query_Interface (This : access Vst3_Component;  Interface_Id: TUID; Obj : access Address) return Result is 
+      type Vst3_Component_Ref is access all Vst3_Component;
+      type Vst3_Plugin_Ref    is access all Vst3_Plugin;
+      function To_Plugin is new Ada.Unchecked_Conversion(Vst3_Component_Ref, Vst3_Plugin_Ref);
+      Plugin : access Vst3_Plugin := To_Plugin(Vst3_Component_Ref(This));
    begin
       if Interface_Id = I_Component_IID then
-         Obj.all := This.all'Address;
+         Obj.all := Plugin.component'Address;
       end if;
+
+      if Interface_Id = I_Controller_IID then
+         Obj.all := Plugin.Controller'Address;
+      end if;
+
       return No_Interface;
    end Query_Interface;
 
