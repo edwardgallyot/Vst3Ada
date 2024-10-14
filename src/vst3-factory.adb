@@ -98,7 +98,7 @@ package body Vst3.Factory is
 
    function Create_Instance (This : access Vst3_Factory; Class_Id : TUID; Interface_Id : TUID; Obj : access Address) return Result is 
       Class_TUID : constant TUID := Make_TUID(1, 0, 0, 0);
-      Instance : access Vst3.Plugin.Vst3_Plugin;
+      Instance : access Vst3_Plugin;
       Ignore : Unsigned;
    begin
       Put_Line("Create Instance");
@@ -106,8 +106,8 @@ package body Vst3.Factory is
       then 
          if Interface_Id = F_Unknown_IID or Interface_Id = Vst3.Component.I_Component_IID 
          then
-            Instance := new Vst3.Plugin.Vst3_Plugin;
-            Ignore   := Vst3.Component.Add_Ref (Instance.Component'Access);
+            Instance := new Vst3_Plugin;
+            Ignore   := Add_Ref (Instance.Component'Access);
             Obj.all  := Instance.Component'Address;
             return Ok_True;
          end if; 
