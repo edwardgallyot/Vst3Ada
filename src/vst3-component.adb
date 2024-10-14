@@ -21,7 +21,7 @@ package body Vst3.Component is
       type Vst3_Component_Ref is access all Vst3_Component;
       type Vst3_Plugin_Ref    is access all Vst3_Plugin;
       function To_Plugin is new Ada.Unchecked_Conversion(Vst3_Component_Ref, Vst3_Plugin_Ref);
-      Plugin : access Vst3_Plugin := To_Plugin(Vst3_Component_Ref(This));
+      Plugin : constant access Vst3_Plugin := To_Plugin(Vst3_Component_Ref(This));
    begin
       if Interface_Id = I_Component_IID then
          Obj.all := Plugin.component'Address;
