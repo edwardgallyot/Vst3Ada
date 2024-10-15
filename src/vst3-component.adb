@@ -3,6 +3,7 @@ with Vst3; use Vst3;
 with Vst3.Controller; use Vst3.Controller;
 with Vst3.Plugin; use Vst3.Plugin;
 with Ada.Unchecked_Conversion; 
+with Vst3.Processor; use Vst3.Processor;
 
 package body Vst3.Component is 
    function Add_Ref (This : access Vst3_Component) return Unsigned is 
@@ -29,6 +30,10 @@ package body Vst3.Component is
 
       if Interface_Id = I_Controller_IID then
          Obj.all := Plugin.Controller'Address;
+      end if;
+
+      if Interface_Id = I_Audio_Processor_IID then
+         Obj.all := Plugin.Processor'Address;
       end if;
 
       return No_Interface;
