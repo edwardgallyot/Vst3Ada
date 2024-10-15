@@ -5,23 +5,23 @@ with Vst3.Component; use Vst3.Component;
 
 package body Vst3.Factory is 
 
-   function Make_Factory_Info (Vendor : String; Url : String; Email : String; Flags : Int) return Factory_Info is 
-      Info : Factory_Info := (Flags => Flags, Vendor => To_C (Vendor), Email => To_C (Email), Url => To_C (Url));
+   function Init (Vendor : String; Url : String; Email : String; Flags : Int) return Factory_Info is 
+      Info : constant Factory_Info := (Flags => Flags, Vendor => To_C (Vendor), Email => To_C (Email), Url => To_C (Url));
    begin
       return Info;
-   end Make_Factory_Info;
+   end Init;
 
-   function Make_Class_Info (Cid : TUID; Cardinality : Int; Category : String; Name : String) return Class_Info is
-      Info : Class_Info := (
+   function Init (Cid : TUID; Cardinality : Int; Category : String; Name : String) return Class_Info is
+      Info : constant Class_Info := (
          Cid => Cid,
          Cardinality => Cardinality,
          Name => To_C (Name),
          Category => To_C (Category));
    begin
       return Info;
-   end Make_Class_Info;
+   end Init;
 
-   function Make_Class_Info_2 (
+   function Init (
       Cid            : TUID;
       Cardinality    : Int;
       Category       : String;
@@ -32,7 +32,7 @@ package body Vst3.Factory is
       Version        : String;  
       Sdk_Version    : String 
    ) return Class_Info_2 is
-      Info_2 : Class_Info_2 := (
+      Info_2 : constant Class_Info_2 := (
          Cid => Cid,
          Cardinality => Cardinality,
          Category => To_C (Category),
@@ -44,7 +44,7 @@ package body Vst3.Factory is
          Sdk_Version => To_C (Sdk_Version));
    begin
       return Info_2;
-   end Make_Class_Info_2;
+   end Init;
 
    function Add_Ref (This : access Vst3_Factory) return Unsigned is 
    begin
@@ -83,13 +83,13 @@ package body Vst3.Factory is
    function Get_Factory_Info (This : access Vst3_Factory;
                               Info : access Factory_Info) return Result is
    begin
-      Info.all := Make_Factory_Info ("the bois", "www.google.com","edgallyot@gmail.com", 0);
+      Info.all := Init ("the bois", "www.google.com","edgallyot@gmail.com", 0);
       return Ok_True;
    end Get_Factory_Info;
 
    function Get_Class_Info (This : access Vst3_Factory; Index : Int; Info: access Class_Info) return Result is
       Class_Id : constant TUID := Make_TUID(1, 0, 0, 0);
-      Info_To_Copy : constant Class_Info := Make_Class_Info(Class_Id, Cardinality_Many_Instances, "Audio Module Class", "Sami");
+      Info_To_Copy : constant Class_Info := Init(Class_Id, Cardinality_Many_Instances, "Audio Module Class", "Sami");
    begin
       Info.all := Info_To_Copy;
       return Ok_True;
@@ -119,7 +119,7 @@ package body Vst3.Factory is
       Cid : constant TUID := Make_TUID(1, 0, 0, 0);
       Component_Simple_Mode_Supported : constant Unsigned_32 := Shift_Right(1, 1);
       function To_Unsigned is new Ada.Unchecked_Conversion(Unsigned_32, Unsigned);
-      Info_2 : Class_Info_2 := Make_Class_Info_2(
+      Info_To_Copy : constant Class_Info_2 := Init(
          Cid,
          Cardinality_Many_Instances,
          "Audio Module Class",
@@ -131,7 +131,7 @@ package body Vst3.Factory is
          "VST 3.7.9"
       );
    begin
-      Info.all := Info_2; 
+      Info.all := Info_To_Copy; 
       return Ok_True;
    end Get_Class_Info_2;
 

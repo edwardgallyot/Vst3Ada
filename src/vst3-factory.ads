@@ -14,7 +14,7 @@ package Vst3.Factory is
    end record
    with Convention => C_Pass_By_Copy;
 
-   function Make_Factory_Info (Vendor : String; Url : String; Email : String; Flags : Int) return Factory_Info;
+   function Init (Vendor : String; Url : String; Email : String; Flags : Int) return Factory_Info;
 
    type Class_Info is record
       Cid         : aliased TUID := (others => nul);  
@@ -24,7 +24,7 @@ package Vst3.Factory is
    end record
    with Convention => C_Pass_By_Copy;
    
-   function Make_Class_Info (Cid : TUID; Cardinality : Int; Category : String; Name : String) return Class_Info;
+   function Init (Cid : TUID; Cardinality : Int; Category : String; Name : String) return Class_Info;
 
    type Class_Info_2 is record
       Cid            : aliased TUID := (others => nul);  
@@ -39,7 +39,7 @@ package Vst3.Factory is
    end record
    with Convention => C_Pass_By_Copy;
 
-   function Make_Class_Info_2 (
+   function Init (
       Cid            : TUID;
       Cardinality    : Int;
       Category       : String;
