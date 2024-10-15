@@ -8,7 +8,7 @@ package Vst3.Controller is
    I_Controller_IID : constant TUID := Make_TUID(16#DCD7BBE3#, 16#7742448D#, 16#A874AACC#, 16#979C759E#);
 
    subtype Param_Id is Unsigned; 
-   subtype Param_Value is Standard.Long_Float;
+   subtype Param_Value is Long_Float;
 
    type Steinberg_Vst_ParameterInfo is record
       Id : aliased Param_Id;  -- ./vst3_c_api.h:1716

@@ -6,7 +6,6 @@ package Vst3.Factory is
 
    Cardinality_Many_Instances : constant Int := 16#7FFFFFFF#;
 
-
    type Factory_Info is record
       Vendor   : aliased C_String_64;
       Url      : aliased C_String_256;

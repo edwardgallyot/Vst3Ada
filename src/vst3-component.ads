@@ -4,37 +4,6 @@ package Vst3.Component is
    I_Component_IID : constant TUID := Make_TUID (16#E831FF31#, 16#F2D54301#, 16#928EBBEE#, 16#25697802#);
    type Vst3_Component;
 
-   type IoModes is (Simple, Advanced, Offline_Processing) with Convention => C; 
-   for IoModes use (Simple => 0, Advanced => 1, Offline_Processing => 2 );
-
-   type Media_Types is (Audio, Event) with Convention => C;
-   for Media_Types use (Audio => 0, Event => 1);
-
-   type Bus_Directions is (Input, Output) with Convention => C;
-   for Bus_Directions use (Input => 0, Output => 1);
-
-   type Bus_Types is (Main, Aux) with Convention => C;
-   for Bus_Types use (Main => 0, Aux => 1);
-
-   type Bus_Name is array (1 .. 128) of char16_t;
-
-   type Bus_Info is record
-      Media_Type     : aliased Media_Types;  
-      Bus_Direction  : aliased Bus_Directions;  
-      Channel_Count  : aliased Int;  
-      Name           : aliased Bus_Name;
-      Bus_Type       : aliased Bus_Types;  
-      Flags          : aliased Unsigned_32;
-   end record
-   with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:1691
-
-   type Routing_Info is record
-      Media_Type  : aliased Media_Types; 
-      Bus_Index   : aliased Int; 
-      Channel     : aliased Int;  
-   end record
-   with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:1704
-
    function Query_Interface (This : access Vst3_Component; Interface_Id : TUID; Obj : access Address) 
       return Result
       with Convention => C;
