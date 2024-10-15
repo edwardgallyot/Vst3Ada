@@ -18,6 +18,7 @@ package body Vst3.Controller is
    begin
       if Interface_Id = I_Controller_IID then
          Obj.all := This.all'Address;
+         return Ok_True;
       end if;
       return No_Interface;
    end Query_Interface;

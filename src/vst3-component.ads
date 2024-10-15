@@ -35,16 +35,16 @@ package Vst3.Component is
    end record
    with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:1704
 
+   function Query_Interface (This : access Vst3_Component; Interface_Id : TUID; Obj : access Address) 
+      return Result
+      with Convention => C;
+
    function Add_Ref (This : access Vst3_Component)
       return Unsigned
       with Convention => C;
 
    function Release (This : access Vst3_Component) 
       return Unsigned
-      with Convention => C;
-
-   function Query_Interface (This : access Vst3_Component; Interface_Id : TUID; Obj : access Address) 
-      return Result
       with Convention => C;
 
    function Initialise (This : access Vst3_Component; Context : access F_Unknown) 
