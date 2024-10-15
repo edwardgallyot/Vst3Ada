@@ -1,7 +1,9 @@
 name = "vst3ada"
-description = "Shiny new project"
+description = "A VST3 API implementation in Pure Ada"
 version = "0.1.0-dev"
 
 authors = ["Edward Gallyot"]
 maintainers = ["Edward Gallyot <edgallyot@gmail.com>"]
 maintainers-logins = ["edwardgallyot"]
+
+configuration = { disabled = true}
