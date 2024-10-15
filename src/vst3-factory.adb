@@ -82,8 +82,11 @@ package body Vst3.Factory is
 
    function Get_Factory_Info (This : access Vst3_Factory;
                               Info : access Factory_Info) return Result is
+
+      Flags : Unsigned_32 := Shift_Right(1, 4);
+      Default_Factory_Flags : Int := Int(Flags);
    begin
-      Info.all := Init ("the bois", "www.google.com","edgallyot@gmail.com", 0);
+      Info.all := Init ("the bois", "www.google.com","edgallyot@gmail.com", Default_Factory_Flags);
       return Ok_True;
    end Get_Factory_Info;
 

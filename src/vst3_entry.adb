@@ -6,6 +6,11 @@ with Interfaces.C; use Interfaces.C;
 package body Vst3_Entry is 
    Factory : access Vst3_Factory;
 
+   function Module_Entry (Param : Address) return C_Bool is
+   begin
+      return true;
+   end Module_Entry;
+
    function Get_Plugin_Factory return System.Address is 
    begin
       if Factory = null then
@@ -19,4 +24,10 @@ package body Vst3_Entry is
       end if;
       return Factory.all'Address;
    end Get_Plugin_Factory;
+
+   function Module_Exit (Param : Address) return C_Bool is
+   begin
+      return true;
+   end Module_Exit;
+
 end Vst3_Entry;

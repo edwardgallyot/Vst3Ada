@@ -13,7 +13,10 @@ project Vst3Ada is
    for Object_Dir use "obj";
 
    package Compiler is
-      for Switches ("Ada") use ("-fvisibility=hidden", "-g");
+      for Switches ("Ada") use (
+         "-fvisibility=hidden",
+         "-gnatf",
+         "-g");
    end Compiler;
 
 end Vst3Ada;
