@@ -13,7 +13,7 @@ package body Vst3.Processor is
       return Unsigned(This.Ref_Count);
    end Release;
 
-   function Query_Interface (This : access Vst3_Processor;  Interface_Id: TUID; Obj : access Address) return Result is 
+   function Query_Interface (This : access Vst3_Processor;  Interface_Id : TUID; Obj : access Address) return Result is 
    begin
       if Interface_Id = I_Audio_Processor_IID then
          Obj.all := This.all'Address;
