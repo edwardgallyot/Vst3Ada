@@ -1,4 +1,4 @@
-project Vst3 is
+project Vst3Ada is
    for Library_Symbol_Policy use "restricted";
    for Library_Symbol_File use "entry/symbols.txt";
 
@@ -16,4 +16,4 @@ project Vst3 is
       for Switches ("Ada") use ("-fvisibility=hidden");
    end Compiler;
 
-end Vst3;
+end Vst3Ada;

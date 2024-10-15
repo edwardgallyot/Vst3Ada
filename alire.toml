@@ -1,0 +1,7 @@
+name = "vst3ada"
+description = "Shiny new project"
+version = "0.1.0-dev"
+
+authors = ["Edward Gallyot"]
+maintainers = ["Edward Gallyot <edgallyot@gmail.com>"]
+maintainers-logins = ["edwardgallyot"]
