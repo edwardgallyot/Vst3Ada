@@ -36,14 +36,17 @@ package body Vst3.Component is
 
       if Interface_Id = Component_Id then
          Obj.all := Plugin.Component'Address;
+         return Ok_True;
       end if;
 
       if Interface_Id = Controller_Id then
          Obj.all := Plugin.Controller'Address;
+         return Ok_True;
       end if;
 
       if Interface_Id = Processor_Id then
          Obj.all := Plugin.Processor'Address;
+         return Ok_True;
       end if;
 
       return No_Interface;
