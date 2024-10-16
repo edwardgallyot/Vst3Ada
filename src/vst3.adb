@@ -1,9 +1,19 @@
+with Ada.Strings.UTF_Encoding;
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Directories; use Ada.Directories;
 with Interfaces; use Interfaces;
 with Ada.Unchecked_Conversion;
+with Vst3.Config; use Vst3.Config;
 
 package body Vst3 is 
+   procedure Vst3_Log (Output : String) is
+   begin
+      if Vst3_Debug then
+         Put ("[VST3 LOG] ");
+         Put_Line (Output);
+      end if;
+   end;
+
    function To_C (Src: String) return C_String_32 is
       Res : C_String_32 := (others => nul);
    begin
@@ -27,6 +37,13 @@ package body Vst3 is
 
    function To_C (Src: String) return C_String_256 is
       Res : C_String_256 := (others => nul);
+   begin
+      for I in Src'Range loop Res (I) := To_C (Src (I)); end loop;
+      return Res;
+   end To_C;
+
+   function To_C (Src: Wide_String) return C_Wide_String_128 is
+      Res : C_Wide_String_128 := (others => char16_nul);
    begin
       for I in Src'Range loop Res (I) := To_C (Src (I)); end loop;
       return Res;

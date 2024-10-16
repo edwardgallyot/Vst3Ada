@@ -4,7 +4,7 @@ with Interfaces.C; use Interfaces.C;
 with System; use System;
 
 package Vst3.Processor is 
-   I_Audio_Processor_IID : TUID := Make_TUID (16#42043F99#, 16#B7DA453C#, 16#A569E79D#, 16#9AAEC33D#);
+   Processor_Id : TUID := Make_TUID (16#42043F99#, 16#B7DA453C#, 16#A569E79D#, 16#9AAEC33D#);
    type Vst3_Processor;
 
    type Process_Setup is record
@@ -61,7 +61,7 @@ package Vst3.Processor is
       return Unsigned 
       with Convention => C;
 
-   type I_Audio_Processor_V_Table is record
+   type Processor_V_Table is record
       Query_Interface         : access function (This : access Vst3_Processor; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
       Add_Ref                 : access function (This : access Vst3_Processor) return Unsigned with Convention => C;
       Release                 : access function (This : access Vst3_Processor) return Unsigned with Convention => C;
@@ -78,7 +78,7 @@ package Vst3.Processor is
    end record
    with Convention => C_Pass_By_Copy;
 
-   Table : aliased constant I_Audio_Processor_V_Table := (
+   Table : aliased constant Processor_V_Table := (
       Query_Interface         => Query_Interface'Access,
       Add_Ref                 => Add_Ref'Access,
       Release                 => Release'Access,
@@ -93,7 +93,7 @@ package Vst3.Processor is
    );
 
    type Vst3_Processor is record 
-      V_Table: access constant I_Audio_Processor_V_Table := Table'Access;
+      V_Table: access constant Processor_V_Table := Table'Access;
       Ref_Count : aliased Atomic_Unsigned := 0;
    end record;
 end Vst3.Processor;

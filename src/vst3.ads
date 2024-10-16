@@ -6,15 +6,20 @@ with Interfaces; use Interfaces;
 
 package Vst3 is 
 
+   procedure Vst3_Log (Output : String);
+
    type C_String_32 is array (1 .. 32) of aliased char;
    type C_String_64 is array (1 .. 64) of aliased char;
    type C_String_128 is array (1 .. 128) of aliased char;
    type C_String_256 is array (1 .. 256) of aliased char;
+   type C_Wide_String_128 is array (1 .. 128) of aliased char16_t;
 
    function To_C (Src : String) return C_String_32;
    function To_C (Src : String) return C_String_64;
    function To_C (Src : String) return C_String_128;
    function To_C (Src : String) return C_String_256;
+
+   function To_C (Src : Wide_String) return C_Wide_String_128;
 
    type TUID_Part is mod 2 ** 32;
    type TUID is array (1 .. 16) of aliased char;
@@ -34,17 +39,15 @@ package Vst3 is
    type Bus_Types is (Main, Aux) with Convention => C;
    for Bus_Types use (Main => 0, Aux => 1);
 
-   type Bus_Name is array (1 .. 128) of char16_t;
-
    type Bus_Info is record
       Media_Type     : aliased Media_Types;  
       Bus_Direction  : aliased Bus_Directions;  
       Channel_Count  : aliased Int;  
-      Name           : aliased Bus_Name;
+      Name           : aliased C_Wide_String_128;
       Bus_Type       : aliased Bus_Types;  
       Flags          : aliased Unsigned_32;
    end record
-   with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:1691
+   with Convention => C_Pass_By_Copy;  
 
    type Routing_Info is record
       Media_Type  : aliased Media_Types; 

@@ -5,16 +5,38 @@ with Interfaces.C; use Interfaces.C;
 package Vst3.Controller is 
    type Vst3_Controller;
 
-   I_Controller_IID : constant TUID := Make_TUID(16#DCD7BBE3#, 16#7742448D#, 16#A874AACC#, 16#979C759E#);
+   Controller_Id : constant TUID := Make_TUID(16#DCD7BBE3#, 16#7742448D#, 16#A874AACC#, 16#979C759E#);
+
+   type Parameter_Flag_Option is (
+      NoFlags,
+      CanAutomate,
+      IsReadOnly,
+      IsWrapAround,
+      IsList,
+      IsHidden,
+      IsProgramChange,
+      IsBypass
+   );
+   type Parameter_Flag_Options is array(Parameter_Flag_Option) of Unsigned_32;
+   Parameter_Flags : Parameter_Flag_Options := (
+      NoFlags           => 0,
+      CanAutomate       => 1,
+      IsReadOnly        => Shift_Right(1, 1),
+      IsWrapAround      => Shift_Right(1, 2),
+      IsList            => Shift_Right(1, 3),
+      IsHidden          => Shift_Right(1, 4),
+      IsProgramChange   => Shift_Right(1, 15),
+      IsBypass          => Shift_Right(1, 16)
+   );
 
    subtype Param_Id is Unsigned; 
    subtype Param_Value is Long_Float;
 
-   type Steinberg_Vst_ParameterInfo is record
+   type Parameter_Info is record
       Id : aliased Param_Id;  -- ./vst3_c_api.h:1716
-      Title : aliased C_String_128;  -- ./vst3_c_api.h:1717
-      Short_Title : aliased C_String_128;  -- ./vst3_c_api.h:1718
-      Units : aliased C_String_128; 
+      Title : aliased C_Wide_String_128;  -- ./vst3_c_api.h:1717
+      Short_Title : aliased C_Wide_String_128;  -- ./vst3_c_api.h:1718
+      Units : aliased C_Wide_String_128; 
       Step_Count : aliased Int;  
       Default_Normalised_Value: aliased Param_Value;
       Unit_Id : aliased Int;
@@ -58,11 +80,11 @@ package Vst3.Controller is
       return Int 
       with Convention => C;  
 
-   function Get_Parameter_Info (This : access Vst3_Controller; Index : Int; Info : access Steinberg_Vst_ParameterInfo)  
+   function Get_Parameter_Info (This : access Vst3_Controller; Index : Int; Info : access Parameter_Info)  
       return Result 
       with Convention => C;  
 
-   function Get_Param_String_By_Value (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value; String : access Wide_Character) 
+   function Get_Param_String_By_Value (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value; Display : access C_Wide_String_128) 
       return Result
       with Convention => C;
 
@@ -94,7 +116,7 @@ package Vst3.Controller is
       return access System.Address
       with Convention => C;
 
-   type I_Edit_Controller_V_Table is record
+   type Controller_V_Table is record
       Query_Interface            : access function (This : access Vst3_Controller; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
       Add_Ref                    : access function (This : access Vst3_Controller) return Unsigned with Convention => C;
       Release                    : access function (This : access Vst3_Controller) return Unsigned with Convention => C;
@@ -108,8 +130,8 @@ package Vst3.Controller is
       -- Get_State               : access function (This : access Controller; arg2 : access Steinberg_IBStream) return Result; 
       Get_State                  : access function (This : access Vst3_Controller; Stream : access Address) return Result with Convention => C; 
       Get_Parameter_Count        : access function (This : access Vst3_Controller) return Int with Convention => C;  
-      Get_Parameter_Info         : access function (This : access Vst3_Controller; Index : Int; Info : access Steinberg_Vst_ParameterInfo) return Result with Convention => C;  
-      Get_Param_String_By_Value  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value; String : access Wide_Character) return Result with Convention => C;
+      Get_Parameter_Info         : access function (This : access Vst3_Controller; Index : Int; Info : access Parameter_Info) return Result with Convention => C;  
+      Get_Param_String_By_Value  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value; String : access C_Wide_String_128) return Result with Convention => C;
       Get_Param_Value_By_String  : access function (This : access Vst3_Controller; Id : Param_Id; String : access Wide_Character; Value : Param_Value) return Result with Convention => C;
       Normalised_Param_To_Plain  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value with Convention => C;
       Plain_Param_To_Normalised  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value with Convention => C;
@@ -124,7 +146,7 @@ package Vst3.Controller is
    end record
    with Convention => C_Pass_By_Copy;
 
-   Table : aliased constant I_Edit_Controller_V_Table := (
+   Table : aliased constant Controller_V_Table := (
       Query_Interface            => Query_Interface'Access,
       Add_Ref                    => Add_Ref'Access,
       Release                    => Release'Access,
@@ -146,7 +168,7 @@ package Vst3.Controller is
    );
 
    type Vst3_Controller is record
-      V_Table : access constant I_Edit_Controller_V_Table := Table'Access;
+      V_Table : access constant Controller_V_Table := Table'Access;
       Ref_Count : aliased Atomic_Unsigned := 0;
    end record
    with Convention => C_Pass_By_Copy;

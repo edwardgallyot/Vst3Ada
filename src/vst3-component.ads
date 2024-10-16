@@ -1,7 +1,7 @@
 with System.Atomic_Counters; use System.Atomic_Counters;
 
 package Vst3.Component is 
-   I_Component_IID : constant TUID := Make_TUID (16#E831FF31#, 16#F2D54301#, 16#928EBBEE#, 16#25697802#);
+   Component_Id : constant TUID := Make_TUID (16#E831FF31#, 16#F2D54301#, 16#928EBBEE#, 16#25697802#);
    type Vst3_Component;
 
    function Query_Interface (This : access Vst3_Component; Interface_Id : TUID; Obj : access Address) 
@@ -60,7 +60,7 @@ package Vst3.Component is
       return Result 
       with Convention => C; 
 
-   type I_Component_V_Table is record
+   type Component_V_Table is record
       Query_Interface         : access function (This : access Vst3_Component; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
       Add_Ref                 : access function (This : access Vst3_Component) return Unsigned with Convention => C;
       Release                 : access function (This : access Vst3_Component) return Unsigned with Convention => C;
@@ -81,7 +81,7 @@ package Vst3.Component is
    end record
    with Convention => C;
 
-   Table : aliased constant I_Component_V_Table := (
+   Table : aliased constant Component_V_Table := (
       Query_Interface         => Query_Interface'Access,
       Add_Ref                 => Add_Ref'Access,
       Release                 => Release'Access,
@@ -99,7 +99,7 @@ package Vst3.Component is
    );
 
    type Vst3_Component is record
-      V_Table : access constant I_Component_V_Table := Table'Access;
+      V_Table : access constant Component_V_Table := Table'Access;
       Ref_Count : aliased Atomic_Unsigned := 0;
    end record;
 

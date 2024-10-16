@@ -14,8 +14,6 @@ package Vst3.Factory is
    end record
    with Convention => C_Pass_By_Copy;
 
-   function Init (Vendor : String; Url : String; Email : String; Flags : Int) return Factory_Info;
-
    type Class_Info is record
       Cid         : aliased TUID := (others => nul);  
       Cardinality : aliased Int := 0;  
@@ -99,7 +97,7 @@ package Vst3.Factory is
       return Result 
       with Convention => C;
 
-   type I_Plugin_Factory_3_V_Table is record
+   type Plugin_Factory_3_V_Table is record
       Query_Interface   : access function (This : access Vst3_Factory; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
       Add_Ref           : access function (This : access Vst3_Factory) return Unsigned with Convention => C;
       Release           : access function (This : access Vst3_Factory) return Unsigned with Convention => C;
@@ -113,7 +111,7 @@ package Vst3.Factory is
    end record
    with Convention => C_Pass_By_Copy;
 
-   Table : aliased constant I_Plugin_Factory_3_V_Table := (
+   Table : aliased constant Plugin_Factory_3_V_Table := (
       Query_Interface   => Query_Interface'Access,
       Release           => Release'Access,
       Add_Ref           => Add_Ref'Access,
@@ -126,12 +124,11 @@ package Vst3.Factory is
       Set_Host_Context  => Set_Host_Context'Access
    );
 
-   I_Plugin_Factory_3_IID : constant TUID := Make_TUID (16#4555A2AB#, 16#C1234E57#, 16#9B122910#, 16#36878931#);
-   I_Plugin_Factory_2_IID : constant TUID := Make_TUID (16#0007B650#, 16#F24B4C0B#, 16#A464EDB9#, 16#F00B2ABB#);
-   I_Plugin_Factory_IID   : constant TUID := Make_TUID (16#7A4D811C#, 16#52114A1F#, 16#AED9D2EE#, 16#0B43BF9F#);
-   F_Unknown_IID          : constant TUID := Make_TUID (16#00000000#, 16#00000000#, 16#C0000000#, 16#00000046#);
+   Plugin_Factory_3_Id : constant TUID := Make_TUID (16#4555A2AB#, 16#C1234E57#, 16#9B122910#, 16#36878931#);
+   Plugin_Factory_2_Id : constant TUID := Make_TUID (16#0007B650#, 16#F24B4C0B#, 16#A464EDB9#, 16#F00B2ABB#);
+   Plugin_Factory_Id   : constant TUID := Make_TUID (16#7A4D811C#, 16#52114A1F#, 16#AED9D2EE#, 16#0B43BF9F#);
    type Vst3_Factory is record
-      V_Table: access constant I_Plugin_Factory_3_V_Table := Table'Access;
+      V_Table: access constant Plugin_Factory_3_V_Table := Table'Access;
       Ref_Count: aliased Atomic_Unsigned := 0;
    end record 
    with Convention => C_Pass_By_Copy;

@@ -16,6 +16,7 @@ project Vst3Ada is
       for Switches ("Ada") use (
          "-fvisibility=hidden",
          "-gnatf",
+         "-gnat2022",
          "-g");
    end Compiler;
 
