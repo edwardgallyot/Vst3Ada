@@ -3,6 +3,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Directories; use Ada.Directories;
 with Interfaces; use Interfaces;
 with Ada.Unchecked_Conversion;
+with Vst3;
 with Vst3.Config; use Vst3.Config;
 
 package body Vst3 is 
@@ -48,6 +49,28 @@ package body Vst3 is
       for I in Src'Range loop Res (I) := To_C (Src (I)); end loop;
       return Res;
    end To_C;
+
+   
+
+   function To_Ada (Src : C_Wide_String_128) return Wide_String is 
+      function Find_Size (Src : C_Wide_String_128) return Integer is
+      Res : Integer;
+      begin
+         for C in Src'Range loop 
+            Res := C;
+            exit when Src(C) = char16_nul;
+         end loop;
+         return Res;
+      end Find_Size;
+
+      Count : Integer := Find_Size(Src);
+      Res : Wide_String (0 .. Count);
+   begin
+      for C in Res'Range loop 
+         Res(C) := To_Ada(Src(C));
+      end loop;
+      return Res;
+   end To_Ada;
 
    function Make_TUID (One: Unsigned_32; Two: Unsigned_32; Three: Unsigned_32; Four: Unsigned_32) return TUID is
       pragma Warnings (Off, "types for unchecked conversion have different sizes");

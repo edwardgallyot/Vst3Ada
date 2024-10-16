@@ -1,6 +1,8 @@
 with System.Atomic_Counters; use System.Atomic_Counters;
+with Vst3;
 with Vst3.Constants; use Vst3.Constants;
 with Ada.Strings.Wide_Fixed; use Ada.Strings.Wide_Fixed;
+with Ada.Long_Float_Wide_Text_IO; use Ada.Long_Float_Wide_Text_IO;
 
 package body Vst3.Controller is 
    function Add_Ref (This : access Vst3_Controller) return Unsigned is 
@@ -86,30 +88,41 @@ package body Vst3.Controller is
    end Get_Parameter_Info;
 
    function Get_Param_String_By_Value (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value; Display : access C_Wide_String_128) return Result is
+      Res : Wide_String (1 .. 64);
    begin
       Vst3_Log("Called Vst3.Controller.Get_Param_String_By_Value");
 
-      -- TODO(edg): Are we going to index via the param id?
-      Display.all := To_C ((Trim (Value'Wide_Image, Ada.Strings.Both) & " Dingles"));
+      -- TODO(edg): Are we going to index via the param id? Probably but need to figure out how that works...
+      Put (
+         To    => Res,
+         Item  => Value,
+         Aft   => 3,
+         Exp   => 0);
+      Display.all := To_C ((Trim (Res, Ada.Strings.Both)));
       return Ok_True;
    end Get_Param_String_By_Value;
 
-   function Get_Param_Value_By_String (This : access Vst3_Controller; Id : Param_Id; String : access Wide_Character; Value : Param_Value) return Result is
+   function Get_Param_Value_By_String (This : access Vst3_Controller; Id : Param_Id; Input : access C_Wide_String_128; Value : access Param_Value) return Result is
    begin
       Vst3_Log("Called Vst3.Controller.Get_Param_Value_By_String");
+
+      -- TODO(edg): Are we going to index via the param id? Probably but need to figure out how that works...
+      Value.all := Long_Float'Wide_Value (To_Ada (Input.all));
       return Ok_True;
    end Get_Param_Value_By_String;
 
    function Normalised_Param_To_Plain (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value  is
    begin
       Vst3_Log("Called Vst3.Controller.Normalised_Param_To_Plain");
-      return 0.0;
+      -- TODO(edg): Are we going to index via the param id? Probably but need to figure out how that works...
+      
+      return Value;
    end Normalised_Param_To_Plain;
 
    function Plain_Param_To_Normalised (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value  is
    begin
       Vst3_Log("Called Vst3.Controller.Plain_Param_To_Normalised");
-      return 0.0;
+      return Value;
    end Plain_Param_To_Normalised;
 
    function Get_Param_Normalised (This : access Vst3_Controller; Id : Param_Id) return Param_Value is

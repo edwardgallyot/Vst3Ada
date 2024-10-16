@@ -17,6 +17,7 @@ package Vst3.Controller is
       IsProgramChange,
       IsBypass
    );
+
    type Parameter_Flag_Options is array(Parameter_Flag_Option) of Unsigned_32;
    Parameter_Flags : Parameter_Flag_Options := (
       NoFlags           => 0,
@@ -31,6 +32,7 @@ package Vst3.Controller is
 
    subtype Param_Id is Unsigned; 
    subtype Param_Value is Long_Float;
+   type Param_Display is digits 4 range Param_Value'First .. Param_Value'Last;
 
    type Parameter_Info is record
       Id : aliased Param_Id;  -- ./vst3_c_api.h:1716
@@ -88,7 +90,7 @@ package Vst3.Controller is
       return Result
       with Convention => C;
 
-   function Get_Param_Value_By_String (This : access Vst3_Controller; Id : Param_Id; String : access Wide_Character; Value : Param_Value)
+   function Get_Param_Value_By_String (This : access Vst3_Controller; Id : Param_Id; Input : access C_Wide_String_128; Value : access Param_Value)
       return Result 
       with Convention => C;
 
@@ -132,7 +134,7 @@ package Vst3.Controller is
       Get_Parameter_Count        : access function (This : access Vst3_Controller) return Int with Convention => C;  
       Get_Parameter_Info         : access function (This : access Vst3_Controller; Index : Int; Info : access Parameter_Info) return Result with Convention => C;  
       Get_Param_String_By_Value  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value; String : access C_Wide_String_128) return Result with Convention => C;
-      Get_Param_Value_By_String  : access function (This : access Vst3_Controller; Id : Param_Id; String : access Wide_Character; Value : Param_Value) return Result with Convention => C;
+      Get_Param_Value_By_String  : access function (This : access Vst3_Controller; Id : Param_Id; String : access C_Wide_String_128; Value : access Param_Value) return Result with Convention => C;
       Normalised_Param_To_Plain  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value with Convention => C;
       Plain_Param_To_Normalised  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value with Convention => C;
       Get_Param_Normalised       : access function (This : access Vst3_Controller; Id : Param_Id) return Param_Value with Convention => C;

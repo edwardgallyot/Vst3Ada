@@ -12,14 +12,16 @@ package Vst3 is
    type C_String_64 is array (1 .. 64) of aliased char;
    type C_String_128 is array (1 .. 128) of aliased char;
    type C_String_256 is array (1 .. 256) of aliased char;
-   type C_Wide_String_128 is array (1 .. 128) of aliased char16_t;
 
    function To_C (Src : String) return C_String_32;
    function To_C (Src : String) return C_String_64;
    function To_C (Src : String) return C_String_128;
    function To_C (Src : String) return C_String_256;
 
+   type C_Wide_String_128 is array (1 .. 128) of aliased char16_t;
+
    function To_C (Src : Wide_String) return C_Wide_String_128;
+   function To_Ada (Src : C_Wide_String_128) return Wide_String;
 
    type TUID_Part is mod 2 ** 32;
    type TUID is array (1 .. 16) of aliased char;
