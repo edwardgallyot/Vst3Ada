@@ -115,37 +115,46 @@ package body Vst3.Controller is
    begin
       Vst3_Log("Called Vst3.Controller.Normalised_Param_To_Plain");
       -- TODO(edg): Are we going to index via the param id? Probably but need to figure out how that works...
-      
+      -- TODO(edg): We want to be able to have other ranges in the params most likely...
+      -- For now we can just do some 0-1 values.
       return Value;
    end Normalised_Param_To_Plain;
 
    function Plain_Param_To_Normalised (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value  is
    begin
       Vst3_Log("Called Vst3.Controller.Plain_Param_To_Normalised");
+      -- TODO(edg): Are we going to index via the param id? Probably but need to figure out how that works...
+      -- TODO(edg): We want to be able to have other ranges in the params most likely...
+      -- For now we can just do some 0-1 values.
       return Value;
    end Plain_Param_To_Normalised;
 
    function Get_Param_Normalised (This : access Vst3_Controller; Id : Param_Id) return Param_Value is
    begin
       Vst3_Log("Called Vst3.Controller.Get_Param_Normalised");
-      return 0.0;
+      -- TODO(edg): Are we going to index via the param id? Probably but need to figure out how that works...
+      return This.Dummy;
    end Get_Param_Normalised;
 
    function Set_Param_Normalised (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Result is
    begin
       Vst3_Log("Called Vst3.Controller.Get_Param_Normalised");
+      -- TODO(edg): Are we going to index via the param id? Probably but need to figure out how that works...
+      -- NOTE(edg): Do we need to consider MIDI in here?
+      This.Dummy := Value;
       return Ok_True;
    end Set_Param_Normalised;
 
    function Set_Component_Handler (This : access Vst3_Controller; Handler : access System.Address) return Result is
    begin 
       Vst3_Log("Called Vst3.Controller.Set_Component_Handler");
-      return Ok_True;
+      return Not_Implemented;
    end Set_Component_Handler;
 
    function Create_View (This : access Vst3_Controller; name : TUID) return access System.Address is
    begin
       Vst3_Log("Called Vst3.Controller.Create_View");
+      -- TODO(edg): We'll need to copy in VST3-View here.
       return null;
    end Create_View;
 

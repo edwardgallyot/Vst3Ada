@@ -170,8 +170,9 @@ package Vst3.Controller is
    );
 
    type Vst3_Controller is record
-      V_Table : access constant Controller_V_Table := Table'Access;
-      Ref_Count : aliased Atomic_Unsigned := 0;
+      V_Table     : access constant Controller_V_Table := Table'Access;
+      Ref_Count   : aliased Atomic_Unsigned := 0;
+      Dummy       : Param_Value;
    end record
    with Convention => C_Pass_By_Copy;
 end Vst3.Controller;
