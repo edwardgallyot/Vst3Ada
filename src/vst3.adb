@@ -50,8 +50,6 @@ package body Vst3 is
       return Res;
    end To_C;
 
-   
-
    function To_Ada (Src : C_Wide_String_128) return Wide_String is 
       function Find_Size (Src : C_Wide_String_128) return Integer is
       Res : Integer;
