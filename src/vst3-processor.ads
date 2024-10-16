@@ -4,6 +4,8 @@ with Interfaces.C; use Interfaces.C;
 with System; use System;
 
 package Vst3.Processor is 
+   -- TODO(edg): I think we need a process context but I'm not sure!
+
    Processor_Id : TUID := Make_TUID (16#42043F99#, 16#B7DA453C#, 16#A569E79D#, 16#9AAEC33D#);
    type Vst3_Processor;
 
@@ -15,7 +17,24 @@ package Vst3.Processor is
    end record
    with Convention => C_Pass_By_Copy;  
 
-   type Speaker_Arrangment is new Unsigned_Long;
+   subtype Speaker_Arrangment is Unsigned_64;
+
+   type Speaker is (
+      Unknown,
+      Left,
+      Right,
+      Mono
+   );
+   
+   -- NOTE(edg): I only have these channel counts so I'm not going to 
+   type Speaker_Flag_Options is array (Speaker) of Unsigned_64;
+   Speaker_Flags : Speaker_Flag_Options := (
+      Unknown => 0,
+      Left  => 1,
+      Right => Shift_Right (1, 1),
+      Mono  => Shift_Right (1, 19));
+
+   function Get_Speaker_Flags (Channel_Count : Integer) return Unsigned_64;
 
    function Query_Interface (This : access Vst3_Processor; Interface_Id : TUID; Obj : access Address) 
       return Result

@@ -1,4 +1,6 @@
 with System.Atomic_Counters; use System.Atomic_Counters;
+with Vst3.Constants; use Vst3.Constants;
+with Interfaces.C; use Interfaces.C;
 
 package body Vst3.Processor is
    function Add_Ref (This : access Vst3_Processor) return Unsigned is 
@@ -11,14 +13,28 @@ package body Vst3.Processor is
    function Release (This : access Vst3_Processor) return Unsigned is
    begin
       Vst3_Log("Called Vst3.Processor.Release");
+      -- TODO(edg): Deallocate. See other release methods.
       Decrement(This.Ref_Count);
       return Unsigned(This.Ref_Count);
    end Release;
 
+   function Get_Speaker_Flags (Channel_Count : Integer) return Unsigned_64 is
+      Res : Unsigned_64 := 0;
+   begin
+      case Channel_Count is
+         when 1 => Res := Speaker_Flags(Mono);
+         when 2 => Res := Speaker_Flags(Left) or Speaker_Flags(Right);
+         when others => null;
+      end case;
+      return Res;
+   end Get_Speaker_Flags;
+
    function Query_Interface (This : access Vst3_Processor;  Interface_Id : TUID; Obj : access Address) return Result is 
    begin
       Vst3_Log("Called Vst3.Processor.Query_Interface");
-      if Interface_Id = Processor_Id then
+      if Interface_Id = Processor_Id or
+         Interface_Id = Unknown_Id
+      then
          Obj.all := This.all'Address;
          return Ok_True;
       end if;
@@ -26,8 +42,25 @@ package body Vst3.Processor is
    end Query_Interface;
 
    function Set_Bus_Arrangements (This : access Vst3_Processor; Inputs : access Speaker_Arrangment; Input_Count : Int; Outputs : access  Speaker_Arrangment; Output_Count : Int) return Result is
+      -- NOTE(edg): Excellent answer from dcbst here for converting a known C-Size array
+      -- to a strong ada type:
+      -- https://www.reddit.com/r/ada/comments/1cr493e/array_of_access_type/ A
+      Inputs_Array : array (1 .. Input_Count) of Speaker_Arrangment;
+      for Inputs_Array'Address use Inputs.all'Address;
+
+      Outputs_Array : array (1 .. Output_Count) of Speaker_Arrangment;
+      for Outputs_Array'Address use Outputs.all'Address;
    begin
       Vst3_Log("Called Vst3.Processor.Set_Bus_Arrangements");
+
+      for I in Inputs_Array'Range loop
+         Inputs_Array (I) := Get_Speaker_Flags (Channel_Count => 1);
+      end loop;
+
+      for I in Outputs_Array'Range loop
+         Outputs_Array (I) := Get_Speaker_Flags (Channel_Count => 1);
+      end loop;
+
       return Ok_True;
    end Set_Bus_Arrangements;
 
