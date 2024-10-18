@@ -44,29 +44,29 @@ package Vst3.Processor is
    type Channel_Buffers ( Sample_Size : Sample_Sizes := Sample_32) is record
       case Sample_Size is
          when Sample_32 =>
-            Channel_Buffers_32 : System.Address;  -- ./vst3_c_api.h:1923
+            Channel_Buffers_32 : System.Address;
          when Sample_64 =>
-            Channel_Buffers_64 : System.Address;  -- ./vst3_c_api.h:1924
+            Channel_Buffers_64 : System.Address;
       end case;
    end record
    with Convention => C_Pass_By_Copy,
         Unchecked_Union => True;
 
    type Audio_Bus_Buffers is record
-      Num_Channels   : aliased Int;  -- ./vst3_c_api.h:1919
-      Silence_Flags  : aliased Unsigned_64;  -- ./vst3_c_api.h:1920
+      Num_Channels   : aliased Int;
+      Silence_Flags  : aliased Unsigned_64;
       Buffers        : aliased Channel_Buffers;
    end record
    with Convention => C_Pass_By_Copy;
    
    type Process_Data is record
-      Process_Mode         : aliased Process_Modes;  -- ./vst3_c_api.h:1933
-      Sample_Size          : aliased Sample_Sizes;  -- ./vst3_c_api.h:1934
-      Num_Samples          : aliased Int;  -- ./vst3_c_api.h:1935
-      Num_Inputs           : aliased Int;  -- ./vst3_c_api.h:1936
-      Num_Outputs          : aliased Int;  -- ./vst3_c_api.h:1937
-      Inputs               : access Audio_Bus_Buffers;  -- ./vst3_c_api.h:1938
-      Outputs              : access Audio_Bus_Buffers;  -- ./vst3_c_api.h:1939
+      Process_Mode         : aliased Process_Modes;
+      Sample_Size          : aliased Sample_Sizes;
+      Num_Samples          : aliased Int;
+      Num_Inputs           : aliased Int;
+      Num_Outputs          : aliased Int;
+      Inputs               : access Audio_Bus_Buffers;
+      Outputs              : access Audio_Bus_Buffers;  
       -- TODO(edg): Finish this off...
       -- Input_Param_Changes  : access Steinberg_Vst_IParameterChanges;  -- ./vst3_c_api.h:1940
       -- Output_Param_Changes : access Steinberg_Vst_IParameterChanges;  -- ./vst3_c_api.h:1941
