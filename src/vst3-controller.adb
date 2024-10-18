@@ -79,7 +79,7 @@ package body Vst3.Controller is
          Title => To_C("Test M8"),
          Short_Title => To_C("Test"),
          Units => To_C("Dingles"),
-         Step_Count => 20,
+         Step_Count => 256,
          Default_Normalised_Value => 0.0,
          Unit_Id => 0,
          Flags => Int(Parameter_Flags(CanAutomate))
@@ -93,8 +93,9 @@ package body Vst3.Controller is
       Vst3_Log("Called Vst3.Controller.Get_Param_String_By_Value");
 
       -- TODO(edg): Are we going to index via the param id? Probably but need to figure out how that works...
-      Put (
-         To    => Res,
+      
+      -- Copied from: https://stackoverflow.com/questions/64238121/scientific-notation-and-non-scientific-notation-values-in-one-line
+      Put (To  => Res,
          Item  => Value,
          Aft   => 3,
          Exp   => 0);

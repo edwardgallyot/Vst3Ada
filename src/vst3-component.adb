@@ -1,5 +1,6 @@
 with System.Atomic_Counters; use System.Atomic_Counters;
 with Vst3; use Vst3;
+with Vst3.Config; use Vst3.Config;
 with Vst3.Controller; use Vst3.Controller;
 with Vst3.Plugin; use Vst3.Plugin;
 with Ada.Unchecked_Conversion; 
@@ -76,7 +77,7 @@ package body Vst3.Component is
       return Ok_True;
    end Get_Controller_Class_Id;
 
-   function Set_Io_Mode (This : access Vst3_Component; Mode : IoModes) return Result  is
+   function Set_Io_Mode (This : access Vst3_Component; Mode : Io_Modes) return Result  is
    begin
       Vst3_Log("Called Vst3.Component.Set_Io_Mode");
       return Not_Implemented;
@@ -87,7 +88,7 @@ package body Vst3.Component is
    begin
       Vst3_Log("Called Vst3.Component.Get_Bus_Count");
       case Media_Type is 
-         when  Audio => 
+         when Audio => 
             case Bus_Direction is
                when Input => Count := 1;
                when Output => Count := 1;
@@ -113,7 +114,9 @@ package body Vst3.Component is
                "Midi Input" 
             else
                "Midi Output"));
-      Channel_Count : constant Int := (if Media_Type = Audio then 1 else 0);
+
+      -- TODO(edg): A more flexible way to do this from the actual plugin?
+      Channel_Count : constant Int := (if Media_Type = Audio then Int(Vst3_Channel_Count) else 0);
       -- Default Flags
       Flags : constant Unsigned_32 := 1;
       Info_To_Copy : constant Bus_Info := (

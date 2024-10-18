@@ -1,8 +1,28 @@
+with Ada.Unchecked_Conversion;
 with System.Atomic_Counters; use System.Atomic_Counters;
+with System; use System;
+with System.Storage_Elements; use System.Storage_Elements;
+with Vst3.Config; use Vst3.Config;
 with Vst3.Constants; use Vst3.Constants;
+with Vst3.Component; use Vst3.Component;
+with Vst3.Controller; use Vst3.Controller;
+with Vst3.Plugin; use Vst3.Plugin;
 with Interfaces.C; use Interfaces.C;
+with Vst3.Processor;
 
 package body Vst3.Processor is
+
+   function To_Plugin (Input : access Vst3_Processor) return access Vst3_Plugin is 
+      type Vst3_Plugin_Ref is access Vst3_Plugin;
+      function Plugin_From_Address is new Ada.Unchecked_Conversion(Address, Vst3_Plugin_Ref);
+      Plugin : Vst3_Plugin_Ref := 
+         Plugin_From_Address (
+            To_Address (
+               To_Integer (Input.all'Address) - Vst3_Controller'Size - Vst3_Component'Size));
+   begin
+      return Plugin; 
+   end To_Plugin;
+
    function Add_Ref (This : access Vst3_Processor) return Unsigned is 
    begin
       Vst3_Log("Called Vst3.Processor.Add_Ref");
@@ -50,47 +70,75 @@ package body Vst3.Processor is
 
       Outputs_Array : array (1 .. Output_Count) of Speaker_Arrangment;
       for Outputs_Array'Address use Outputs.all'Address;
+
+      Input_Ok : Boolean := True;
+      Output_Ok : Boolean := True;
+      Requested_Speaker : Speaker_Arrangment := Speaker_Flags(Unknown);
+      Accepted_Speaker : Speaker_Arrangment;
+
+      -- TODO(ed): We want to be able to get this from the plugin
+      Channel_Count : constant Integer := Vst3_Channel_Count;
    begin
       Vst3_Log("Called Vst3.Processor.Set_Bus_Arrangements");
 
       for I in Inputs_Array'Range loop
-         Inputs_Array (I) := Get_Speaker_Flags (Channel_Count => 1);
+         Requested_Speaker := Inputs_Array(I);
+         Accepted_Speaker := Get_Speaker_Flags (Channel_Count);
+         Input_Ok := Input_Ok and (Requested_Speaker = Accepted_Speaker or Requested_Speaker = 0);
       end loop;
 
       for I in Outputs_Array'Range loop
-         Outputs_Array (I) := Get_Speaker_Flags (Channel_Count => 1);
+         Requested_Speaker := Outputs_Array(I);
+         Accepted_Speaker := Get_Speaker_Flags (Channel_Count);
+         Output_Ok := Output_Ok and (Requested_Speaker = Accepted_Speaker or Requested_Speaker = 0);
       end loop;
 
-      return Ok_True;
+      return (if Output_Ok and Input_Ok then Ok_True else False);
    end Set_Bus_Arrangements;
 
    function Get_Bus_Arrangements (This : access Vst3_Processor; Bus_Direction : Bus_Directions; Index : Int; Arrangement : access Speaker_Arrangment) return Result is
+      Channel_Count : Integer := Vst3_Channel_Count;
    begin
       Vst3_Log("Called Vst3.Processor.Get_Bus_Arrangements");
+      -- Zero based indexing for a mono bus...
+      if Index > 0 then
+         return False;
+      end if;
+
+      case Bus_Direction is 
+         when Output => Arrangement.all := Get_Speaker_Flags (Channel_Count);
+         when Input => Arrangement.all := Get_Speaker_Flags (Channel_Count);
+      end case;
+
       return Ok_True;
    end Get_Bus_Arrangements;
 
-   function Can_Process_Sample_Size (This : access Vst3_Processor; Size : Int) return Result is
+   function Can_Process_Sample_Size (This : access Vst3_Processor; Size : Sample_Sizes) return Result is
    begin
       Vst3_Log("Called Vst3.Processor.Can_Process_Sample_Size");
-      return Ok_True;
+      return (if Size = Sample_32 then Ok_True else Invalid_Argument);
    end Can_Process_Sample_Size;
 
    function Get_Latency_Samples (This : access Vst3_Processor) return Unsigned  is
    begin
       Vst3_Log("Called Vst3.Processor.Get_Latency_Samples");
+      -- TODO(edg): Get the actual latency in samples that we need.
       return 1;
    end Get_Latency_Samples;
 
    function Setup_Processing (This : access Vst3_Processor; Setup : access Process_Setup) return Result is
    begin
       Vst3_Log("Called Vst3.Processor.Setup_Processing");
+      -- TODO(edg): We should use the sample rate and the block size here. 
+      This.Sample_Rate := Setup.Sample_Rate;
+      This.Block_Size  := Integer(Setup.Block_Size);
       return Ok_True;
    end Setup_Processing;
 
    function Set_Processing (This : access Vst3_Processor; State : C_Bool) return Result is
    begin
       Vst3_Log("Called Vst3.Processor.Set_Processing");
+      -- NOTE(edg): Maybe we don't care here?
       return Ok_True;
    end Set_Processing;
 

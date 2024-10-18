@@ -29,8 +29,8 @@ package Vst3 is
    -- NOTE(edg): WIN32: This may not work on win32 see vst3_c_api.h:40
    function Make_TUID (One : Unsigned_32; Two : Unsigned_32; Three : Unsigned_32; Four : Unsigned_32) return TUID;
 
-   type IoModes is (Simple, Advanced, Offline_Processing) with Convention => C; 
-   for IoModes use (Simple => 0, Advanced => 1, Offline_Processing => 2 );
+   type Io_Modes is (Simple, Advanced, Offline_Processing) with Convention => C; 
+   for Io_Modes use (Simple => 0, Advanced => 1, Offline_Processing => 2 );
 
    type Media_Types is (Audio, Event) with Convention => C;
    for Media_Types use (Audio => 0, Event => 1);

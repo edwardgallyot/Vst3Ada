@@ -32,7 +32,6 @@ package Vst3.Controller is
 
    subtype Param_Id is Unsigned; 
    subtype Param_Value is Long_Float;
-   type Param_Display is digits 4 range Param_Value'First .. Param_Value'Last;
 
    type Parameter_Info is record
       Id : aliased Param_Id;  -- ./vst3_c_api.h:1716
@@ -45,6 +44,38 @@ package Vst3.Controller is
       Flags : aliased Int; 
    end record
    with Convention => C_Pass_By_Copy;  
+
+   type Controller_V_Table is record
+      Query_Interface            : access function (This : access Vst3_Controller; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
+      Add_Ref                    : access function (This : access Vst3_Controller) return Unsigned with Convention => C;
+      Release                    : access function (This : access Vst3_Controller) return Unsigned with Convention => C;
+      Initialise                 : access function (This : access Vst3_Controller; Context : access F_Unknown) return Result with Convention => C;
+      De_Initialise              : access function (This : access Vst3_Controller) return Result with Convention => C;
+      -- TODO(edg): Do we need to implement these properly? These are placeholders right now
+      -- Set_Component_State     : access function (arg1 : System.Address; arg2 : access Steinberg_IBStream) return Steinberg_tresult;  -- ./vst3_c_api.h:2514
+      Set_Component_State        : access function (This : access Vst3_Controller; Stream : access Address) return Result with Convention => C;  
+      -- Set_State               : access function (This : access Controller; arg2 : access Steinberg_IBStream) return Result;  
+      Set_State                  : access function (This : access Vst3_Controller; Stream : access Address) return Result with Convention => C;  
+      -- Get_State               : access function (This : access Controller; arg2 : access Steinberg_IBStream) return Result; 
+      Get_State                  : access function (This : access Vst3_Controller; Stream : access Address) return Result with Convention => C; 
+      Get_Parameter_Count        : access function (This : access Vst3_Controller) return Int with Convention => C;  
+      Get_Parameter_Info         : access function (This : access Vst3_Controller; Index : Int; Info : access Parameter_Info) return Result with Convention => C;  
+      Get_Param_String_By_Value  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value; String : access C_Wide_String_128) return Result with Convention => C;
+      Get_Param_Value_By_String  : access function (This : access Vst3_Controller; Id : Param_Id; String : access C_Wide_String_128; Value : access Param_Value) return Result with Convention => C;
+      Normalised_Param_To_Plain  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value with Convention => C;
+      Plain_Param_To_Normalised  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value with Convention => C;
+      Get_Param_Normalised       : access function (This : access Vst3_Controller; Id : Param_Id) return Param_Value with Convention => C;
+      Set_Param_Normalised       : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Result with Convention => C;
+      -- TODO(edg): Do we need to implement IComponentHandler too?
+      -- Set_Component_Handler : access function (arg1 : System.Address; arg2 : access Steinberg_Vst_IComponentHandler) return Steinberg_tresult;  -- ./vst3_c_api.h:2525
+      Set_Component_Handler      : access function (This : access Vst3_Controller; Handler : access System.Address) return Result with Convention => C;
+      -- TODO(edg): Platform specific UI?
+      -- Create_View : access function (arg1 : System.Address; arg2 : Steinberg_FIDString) return access Steinberg_IPlugView;  -- ./vst3_c_api.h:2526
+      Create_View : access function (This : access Vst3_Controller; name : TUID) return access System.Address with Convention => C;
+   end record
+   with Convention => C_Pass_By_Copy;
+
+   type Param_Display is digits 4 range Param_Value'First .. Param_Value'Last;
 
    function Query_Interface (This : access Vst3_Controller; Interface_Id : TUID; Obj : access Address) 
       return Result
@@ -117,36 +148,6 @@ package Vst3.Controller is
    function Create_View (This : access Vst3_Controller; name : TUID) 
       return access System.Address
       with Convention => C;
-
-   type Controller_V_Table is record
-      Query_Interface            : access function (This : access Vst3_Controller; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
-      Add_Ref                    : access function (This : access Vst3_Controller) return Unsigned with Convention => C;
-      Release                    : access function (This : access Vst3_Controller) return Unsigned with Convention => C;
-      Initialise                 : access function (This : access Vst3_Controller; Context : access F_Unknown) return Result with Convention => C;
-      De_Initialise              : access function (This : access Vst3_Controller) return Result with Convention => C;
-      -- TODO(edg): Do we need to implement these properly? These are placeholders right now
-      -- Set_Component_State     : access function (arg1 : System.Address; arg2 : access Steinberg_IBStream) return Steinberg_tresult;  -- ./vst3_c_api.h:2514
-      Set_Component_State        : access function (This : access Vst3_Controller; Stream : access Address) return Result with Convention => C;  
-      -- Set_State               : access function (This : access Controller; arg2 : access Steinberg_IBStream) return Result;  
-      Set_State                  : access function (This : access Vst3_Controller; Stream : access Address) return Result with Convention => C;  
-      -- Get_State               : access function (This : access Controller; arg2 : access Steinberg_IBStream) return Result; 
-      Get_State                  : access function (This : access Vst3_Controller; Stream : access Address) return Result with Convention => C; 
-      Get_Parameter_Count        : access function (This : access Vst3_Controller) return Int with Convention => C;  
-      Get_Parameter_Info         : access function (This : access Vst3_Controller; Index : Int; Info : access Parameter_Info) return Result with Convention => C;  
-      Get_Param_String_By_Value  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value; String : access C_Wide_String_128) return Result with Convention => C;
-      Get_Param_Value_By_String  : access function (This : access Vst3_Controller; Id : Param_Id; String : access C_Wide_String_128; Value : access Param_Value) return Result with Convention => C;
-      Normalised_Param_To_Plain  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value with Convention => C;
-      Plain_Param_To_Normalised  : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Param_Value with Convention => C;
-      Get_Param_Normalised       : access function (This : access Vst3_Controller; Id : Param_Id) return Param_Value with Convention => C;
-      Set_Param_Normalised       : access function (This : access Vst3_Controller; Id : Param_Id; Value : Param_Value) return Result with Convention => C;
-      -- TODO(edg): Do we need to implement IComponentHandler too?
-      -- Set_Component_Handler : access function (arg1 : System.Address; arg2 : access Steinberg_Vst_IComponentHandler) return Steinberg_tresult;  -- ./vst3_c_api.h:2525
-      Set_Component_Handler      : access function (This : access Vst3_Controller; Handler : access System.Address) return Result with Convention => C;
-      -- TODO(edg): Platform specific UI?
-      -- Create_View : access function (arg1 : System.Address; arg2 : Steinberg_FIDString) return access Steinberg_IPlugView;  -- ./vst3_c_api.h:2526
-      Create_View : access function (This : access Vst3_Controller; name : TUID) return access System.Address with Convention => C;
-   end record
-   with Convention => C_Pass_By_Copy;
 
    Table : aliased constant Controller_V_Table := (
       Query_Interface            => Query_Interface'Access,

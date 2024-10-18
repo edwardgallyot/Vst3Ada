@@ -26,3 +26,6 @@ WIP.
 * Inspiring Audio Projects:
     - https://github.com/Tremus/CPLUG/tree/master CPLUG is great and has a really
       simple implementation of the VST3 API.
+    - https://github.com/RustAudio/vst3-sys/blob/master/src/vst/ivstaudioprocessor.rs#L46
+      someone over at rust has also done some bindings, these are a good reference point for
+      what else needs doing.
