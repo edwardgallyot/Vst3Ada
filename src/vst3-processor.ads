@@ -31,15 +31,14 @@ package Vst3.Processor is
       Right,
       Mono);
 
-   -- NOTE(edg): I only have these channel counts so I'm not going to 
+   -- NOTE(edg): I only have these channel counts as that's all I need...
+   -- TODO(edg): Implment all the constants?
    type Speaker_Flag_Options is array (Speaker) of Unsigned_64;
    Speaker_Flags : Speaker_Flag_Options := (
       Unknown => 0,
       Left  => 1,
       Right => Shift_Left (1, 1),
       Mono  => Shift_Left (1, 19));
-
-   -- TODO(edg): I think we need a process context but I'm not sure!
 
    type Param_Value_Queue_V_Table is record
       Query_Interface  : access function (This : Address; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
