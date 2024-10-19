@@ -58,6 +58,9 @@ package Vst3 is
    end record
    with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:1704
 
+   subtype Param_Id is Unsigned; 
+   subtype Param_Value is Long_Float;
+
    -- NOTE(edg): WIN32: This may not work see vst3_c_api.h:223
    type Result is (
       No_Interface,

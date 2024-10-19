@@ -4,7 +4,6 @@ with Interfaces.C; use Interfaces.C;
 with System; use System;
 
 package Vst3.Processor is 
-
    type Process_Modes is 
      (Realtime,
       Prefetch,
@@ -41,6 +40,38 @@ package Vst3.Processor is
       Mono  => Shift_Left (1, 19));
 
    -- TODO(edg): I think we need a process context but I'm not sure!
+
+   type Param_Value_Queue_V_Table is record
+      Query_Interface  : access function (This : Address; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
+      Add_Ref          : access function (This : Address) return Unsigned with Convention => C;
+      Release          : access function (This : Address) return Unsigned with Convention => C;
+      Get_Parameter_Id : access function (This : Address) return Param_Id;
+      Get_Point_Count  : access function (This : Address) return Int;
+      Get_Point        : access function (This : Address; arg2 : Int; arg3 : access Int; arg4 : access Param_Value) return Result;
+      Add_Point        : access function (This : Address; arg2 : Int; arg3 : Param_Value; arg4 : access Int) return Result;
+   end record
+   with Convention => C_Pass_By_Copy;
+
+   type Param_Value_Queue is record
+      lpVtbl : access Param_Value_Queue_V_Table;
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Parameter_Changes_V_Table is record
+      Query_Interface      : access function (This : Address; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
+      Add_Ref              : access function (This : Address) return Unsigned with Convention => C;
+      Release              : access function (This : Address) return Unsigned with Convention => C;
+      Get_Parameter_Count  : access function (This : Address) return Int with Convention => C; 
+      Get_Parameter_Data   : access function (This : Address; Index : Int) return access Param_Value_Queue;
+      Add_Parameter_Data   : access function (This : Address; Id : access Param_Id; Index : access Int) return access Param_Value_Queue;
+   end record
+   with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:3401
+
+   type Parameter_Changes is record
+      lpVtbl : access Parameter_Changes_V_Table;
+   end record
+   with Convention => C_Pass_By_Copy; 
+
    type Channel_Buffers ( Sample_Size : Sample_Sizes := Sample_32) is record
       case Sample_Size is
          when Sample_32 =>
@@ -68,8 +99,8 @@ package Vst3.Processor is
       Inputs               : access Audio_Bus_Buffers;
       Outputs              : access Audio_Bus_Buffers;  
       -- TODO(edg): Finish this off...
-      -- Input_Param_Changes  : access Steinberg_Vst_IParameterChanges;  -- ./vst3_c_api.h:1940
-      -- Output_Param_Changes : access Steinberg_Vst_IParameterChanges;  -- ./vst3_c_api.h:1941
+      Input_Param_Changes  : access Parameter_Changes;  -- ./vst3_c_api.h:1940
+      Output_Param_Changes : access Parameter_Changes;  -- ./vst3_c_api.h:1941
       -- Input_Events         : access Steinberg_Vst_IEventList;  -- ./vst3_c_api.h:1942
       -- Output_Events        : access Steinberg_Vst_IEventList;  -- ./vst3_c_api.h:1943
       -- Process_Context      : access Steinberg_Vst_ProcessContext;  -- ./vst3_c_api.h:1944
@@ -99,7 +130,7 @@ package Vst3.Processor is
       Set_Processing          : access function (This : access Vst3_Processor; State : C_Bool) return Result with Convention => C;
       -- TODO(edg): This needs attention: the Data arg is just a place holder for ProcessData
       --     Process : access function (arg1 : System.Address; arg2 : access Steinberg_Vst_ProcessData) return Steinberg_tresult;  -- ./vst3_c_api.h:3022
-      Process                 : access function (This : access Vst3_Processor; Data : access Address) return Result with Convention => C;
+      Process                 : access function (This : access Vst3_Processor; Data : access Process_Data) return Result with Convention => C;
       Get_Tail_Samples        : access function (This : access Vst3_Processor) return Unsigned with Convention => C;
    end record
    with Convention => C_Pass_By_Copy;
@@ -142,7 +173,7 @@ package Vst3.Processor is
       return Result
       with Convention => C;
 
-   function Process (This : access Vst3_Processor; Data : access Address)
+   function Process (This : access Vst3_Processor; Data : access Process_Data)
       return Result 
       with Convention => C;
 

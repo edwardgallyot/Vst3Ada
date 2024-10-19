@@ -142,7 +142,7 @@ package body Vst3.Processor is
       return Ok_True;
    end Set_Processing;
 
-   function Process (This : access Vst3_Processor; Data : access Address) return Result is 
+   function Process (This : access Vst3_Processor; Data : access Process_Data) return Result is 
    begin
       -- NOTE(edg): We don't need to spam the audio callback
       return Ok_True;

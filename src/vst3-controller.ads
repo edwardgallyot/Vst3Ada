@@ -30,13 +30,11 @@ package Vst3.Controller is
       IsBypass          => Shift_Right(1, 16)
    );
 
-   subtype Param_Id is Unsigned; 
-   subtype Param_Value is Long_Float;
 
    type Parameter_Info is record
-      Id : aliased Param_Id;  -- ./vst3_c_api.h:1716
-      Title : aliased C_Wide_String_128;  -- ./vst3_c_api.h:1717
-      Short_Title : aliased C_Wide_String_128;  -- ./vst3_c_api.h:1718
+      Id : aliased Param_Id;
+      Title : aliased C_Wide_String_128;
+      Short_Title : aliased C_Wide_String_128;
       Units : aliased C_Wide_String_128; 
       Step_Count : aliased Int;  
       Default_Normalised_Value: aliased Param_Value;
@@ -71,7 +69,7 @@ package Vst3.Controller is
       Set_Component_Handler      : access function (This : access Vst3_Controller; Handler : access System.Address) return Result with Convention => C;
       -- TODO(edg): Platform specific UI?
       -- Create_View : access function (arg1 : System.Address; arg2 : Steinberg_FIDString) return access Steinberg_IPlugView;  -- ./vst3_c_api.h:2526
-      Create_View : access function (This : access Vst3_Controller; name : TUID) return access System.Address with Convention => C;
+      Create_View                : access function (This : access Vst3_Controller; name : TUID) return access System.Address with Convention => C;
    end record
    with Convention => C_Pass_By_Copy;
 
