@@ -52,7 +52,7 @@ package Vst3.Processor is
    with Convention => C_Pass_By_Copy;
 
    type Param_Value_Queue is record
-      lpVtbl : access Param_Value_Queue_V_Table;
+      V_Table : access Param_Value_Queue_V_Table;
    end record
    with Convention => C_Pass_By_Copy;  
 
@@ -67,7 +67,7 @@ package Vst3.Processor is
    with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:3401
 
    type Parameter_Changes is record
-      lpVtbl : access Parameter_Changes_V_Table;
+      V_Table : access Parameter_Changes_V_Table;
    end record
    with Convention => C_Pass_By_Copy; 
 
@@ -148,26 +148,26 @@ package Vst3.Processor is
    end record
    with Convention => C_Pass_By_Copy;  
 
-   type Event_Data (discr : unsigned := 0) is record
-      case discr is
+   type Event_Data (Event_Type : unsigned := 0) is record
+      case Event_Type is
          when 0 =>
-            Steinberg_Vst_Event_noteOn : aliased Note_On_Event;  
+            Note_On                 : aliased Note_On_Event;  
          when 1 =>
-            Steinberg_Vst_Event_noteOff : aliased Note_Off_Event;  
+            Note_Off                : aliased Note_Off_Event;  
          when 2 =>
-            Steinberg_Vst_Event_data : aliased Data_Event;  
+            Data                    : aliased Data_Event;  
          when 3 =>
-            Steinberg_Vst_Event_polyPressure : aliased Poly_Pressure_Event;  
+            Poly_Pressure           : aliased Poly_Pressure_Event;  
          when 4 =>
-            Steinberg_Vst_Event_noteExpressionValue : aliased Note_Expression_Value_Event;  
+            Note_Expression_Value   : aliased Note_Expression_Value_Event;  
          when 5 =>
-            Steinberg_Vst_Event_noteExpressionText : aliased Note_Expression_Text_Event;  
+            Note_Expression_Text    : aliased Note_Expression_Text_Event;  
          when 6 =>
-            Steinberg_Vst_Event_chord : aliased Chord_Event;  
+            Chord                   : aliased Chord_Event;  
          when 7 =>
-            Steinberg_Vst_Event_scale : aliased Scale_Event;  
+            Scale                   : aliased Scale_Event;  
          when others =>
-            Steinberg_Vst_Event_midiCCOut : aliased Legacy_Midi_Cc_Out_Event;  
+            Midi_Cc_Out             : aliased Legacy_Midi_Cc_Out_Event;  
       end case;
    end record
    with Convention => C_Pass_By_Copy,
@@ -196,7 +196,7 @@ package Vst3.Processor is
    with Convention => C_Pass_By_Copy;  
 
    type Event_List is record
-      lpVtbl : access Event_List_V_Table;  
+      V_Table : access Event_List_V_Table;  
    end record
    with Convention => C_Pass_By_Copy;  
 
