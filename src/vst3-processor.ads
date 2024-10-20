@@ -71,6 +71,135 @@ package Vst3.Processor is
    end record
    with Convention => C_Pass_By_Copy; 
 
+   type Note_On_Event is record
+      Channel  : aliased Short;  
+      Pitch    : aliased Short;  
+      Tuning   : aliased Float;  
+      Velocity : aliased Float;  
+      Length   : aliased Int;  
+      Note_Id  : aliased Int;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Note_Off_Event is record
+      Channel  : aliased Short;  
+      Pitch    : aliased Short;  
+      Velocity : aliased Float;  
+      Note_Id  : aliased Int;  
+      Tuning   : aliased Float;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Data_Event is record
+      Size        : aliased Unsigned;  
+      Data_Type   : aliased Unsigned;  
+      Bytes       : access Unsigned_Char;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Poly_Pressure_Event is record
+      Channel  : aliased Short;  
+      Pitch    : aliased Short;  
+      Pressure : aliased Float;  
+      Note_Id  : aliased Int;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   subtype Note_Expression_Type_Id is Unsigned;
+   subtype Note_Expression_Value is Long_Float;
+
+   type Note_Expression_Value_Event is record
+      Type_Id  : aliased Note_Expression_Type_Id;  
+      Note_Id  : aliased Int;  
+      Value    : aliased Note_Expression_Value;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Note_Expression_Text_Event is record
+      Type_Id  : aliased Note_Expression_Type_Id;  
+      Note_Id  : aliased Int;  
+      Text_Len : aliased Unsigned;  
+      Text     : access Char16_T;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Chord_Event is record
+      Root        : aliased Short;  
+      Bass_Note   : aliased Short;  
+      Mask        : aliased Short;  
+      Text_Len    : aliased Unsigned_Short;  
+      Text        : access Char16_T;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Scale_Event is record
+      root     : aliased Short;  
+      mask     : aliased Short;  
+      textLen  : aliased Unsigned_Short;  
+      text     : access Char16_T;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Legacy_Midi_Cc_Out_Event is record
+      Control_Number : aliased Unsigned_Char;  
+      channel        : aliased Char;  
+      Value          : aliased Char;  
+      Value_2        : aliased Char;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Event_Data (discr : unsigned := 0) is record
+      case discr is
+         when 0 =>
+            Steinberg_Vst_Event_noteOn : aliased Note_On_Event;  
+         when 1 =>
+            Steinberg_Vst_Event_noteOff : aliased Note_Off_Event;  
+         when 2 =>
+            Steinberg_Vst_Event_data : aliased Data_Event;  
+         when 3 =>
+            Steinberg_Vst_Event_polyPressure : aliased Poly_Pressure_Event;  
+         when 4 =>
+            Steinberg_Vst_Event_noteExpressionValue : aliased Note_Expression_Value_Event;  
+         when 5 =>
+            Steinberg_Vst_Event_noteExpressionText : aliased Note_Expression_Text_Event;  
+         when 6 =>
+            Steinberg_Vst_Event_chord : aliased Chord_Event;  
+         when 7 =>
+            Steinberg_Vst_Event_scale : aliased Scale_Event;  
+         when others =>
+            Steinberg_Vst_Event_midiCCOut : aliased Legacy_Midi_Cc_Out_Event;  
+      end case;
+   end record
+   with Convention => C_Pass_By_Copy,
+        Unchecked_Union => True;
+
+   subtype Quarter_Notes is Long_Float;
+
+   type Event is record
+      Bus_Index      : aliased Int;  
+      Sample_Offset  : aliased Int;  
+      Ppq_Position   : aliased Quarter_Notes;  
+      Flags          : aliased Unsigned_Short;  
+      Event_Type     : aliased Unsigned_Short;  
+      Data           : aliased Event_Data;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Event_List_V_Table is record
+      Query_Interface  : access function (This : Address; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
+      Add_Ref          : access function (This : Address) return Unsigned with Convention => C;
+      Release          : access function (This : Address) return Unsigned with Convention => C;
+      Get_Event_Count  : access function (This : System.Address) return Int;
+      Get_Event        : access function (This : System.Address; Index : Int; Event_List : access Event) return Result; 
+      Add_Event        : access function (This : System.Address; Event_List : access Event) return Result;
+   end record
+   with Convention => C_Pass_By_Copy;  
+
+   type Event_List is record
+      lpVtbl : access Event_List_V_Table;  
+   end record
+   with Convention => C_Pass_By_Copy;  
+
    type Channel_Buffers ( Sample_Size : Sample_Sizes := Sample_32) is record
       case Sample_Size is
          when Sample_32 =>
@@ -83,11 +212,46 @@ package Vst3.Processor is
         Unchecked_Union => True;
 
    type Audio_Bus_Buffers is record
-      Num_Channels   : aliased Int;
+      Num_Channels   : aliased Integer_32;
       Silence_Flags  : aliased Unsigned_64;
       Buffers        : aliased Channel_Buffers;
    end record
    with Convention => C_Pass_By_Copy;
+
+   type Vst_Chord is record
+      Key_Note    : Unsigned_8;
+      Root_Note   : Unsigned_8;
+      Chord_Mask  : Integer_16;
+   end record
+   with Convention => C_Pass_By_Copy;
+
+   type Vst_Frame_Rate is record
+      Frames_Per_Second : Unsigned_32;
+      Flags             : Unsigned_32;
+   end record
+   with Convention => C_Pass_By_Copy;
+
+   subtype Time_Samples is Unsigned_64;
+
+   type Process_Context is record
+      State                      : aliased Unsigned_32;  
+      Sample_Rate                : aliased Long_Float;  
+      Project_Time_Samples       : aliased Time_Samples;  
+      System_Time                : aliased Integer;  
+      Continous_Time_Samples     : aliased Time_Samples;  
+      Project_Time_Music         : aliased Quarter_Notes;  
+      Bar_Position_Music         : aliased Quarter_Notes;  
+      Cycle_Start_Music          : aliased Quarter_Notes;  
+      Cycle_End_Music            : aliased Quarter_Notes;  
+      Tempo                      : aliased Double;  
+      Time_Signature_Numerator   : aliased Integer_32;  
+      Time_Signature_Denominator : aliased Integer_32;  
+      Chord                      : aliased Vst_Chord;  
+      Smpte_Offset_Subframes     : aliased Integer_32;  
+      Frame_Rate                 : aliased Vst_Frame_Rate;  
+      Samples_To_Next_Clock      : aliased Integer_32;  
+   end record
+   with Convention => C_Pass_By_Copy;  
    
    type Process_Data is record
       Process_Mode         : aliased Process_Modes;
@@ -97,14 +261,13 @@ package Vst3.Processor is
       Num_Outputs          : aliased Int;
       Inputs               : access Audio_Bus_Buffers;
       Outputs              : access Audio_Bus_Buffers;  
-      -- TODO(edg): Finish this off...
-      Input_Param_Changes  : access Parameter_Changes;  -- ./vst3_c_api.h:1940
-      Output_Param_Changes : access Parameter_Changes;  -- ./vst3_c_api.h:1941
-      -- Input_Events         : access Steinberg_Vst_IEventList;  -- ./vst3_c_api.h:1942
-      -- Output_Events        : access Steinberg_Vst_IEventList;  -- ./vst3_c_api.h:1943
-      -- Process_Context      : access Steinberg_Vst_ProcessContext;  -- ./vst3_c_api.h:1944
+      Input_Param_Changes  : access Parameter_Changes;  
+      Output_Param_Changes : access Parameter_Changes;  
+      Input_Events         : access Event_List;  
+      Output_Events        : access Event_List;  
+      Context              : access Process_Context;  
    end record
-   with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:1931
+   with Convention => C_Pass_By_Copy;  
 
    Processor_Id : TUID := Make_TUID (16#42043F99#, 16#B7DA453C#, 16#A569E79D#, 16#9AAEC33D#);
    type Vst3_Processor;
@@ -127,8 +290,6 @@ package Vst3.Processor is
       Get_Latency_Samples     : access function (This : access Vst3_Processor) return Unsigned with Convention => C;
       Setup_Processing        : access function (This : access Vst3_Processor; Setup : access Process_Setup) return Result with Convention => C;
       Set_Processing          : access function (This : access Vst3_Processor; State : C_Bool) return Result with Convention => C;
-      -- TODO(edg): This needs attention: the Data arg is just a place holder for ProcessData
-      --     Process : access function (arg1 : System.Address; arg2 : access Steinberg_Vst_ProcessData) return Steinberg_tresult;  -- ./vst3_c_api.h:3022
       Process                 : access function (This : access Vst3_Processor; Data : access Process_Data) return Result with Convention => C;
       Get_Tail_Samples        : access function (This : access Vst3_Processor) return Unsigned with Convention => C;
    end record
