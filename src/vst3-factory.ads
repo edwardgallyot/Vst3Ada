@@ -22,8 +22,6 @@ package Vst3.Factory is
    end record
    with Convention => C_Pass_By_Copy;
    
-   function Init (Cid : TUID; Cardinality : Int; Category : String; Name : String) return Class_Info;
-
    type Class_Info_2 is record
       Cid            : aliased TUID := (others => nul);  
       Cardinality    : aliased Int := 0;  
@@ -36,18 +34,6 @@ package Vst3.Factory is
       Sdk_Version    : aliased C_String_64 := (others => nul);  
    end record
    with Convention => C_Pass_By_Copy;
-
-   function Init (
-      Cid            : TUID;
-      Cardinality    : Int;
-      Category       : String;
-      Name           : String;
-      Class_Flags    : Unsigned;  
-      Sub_Categories : String;
-      Vendor         : String;  
-      Version        : String;  
-      Sdk_Version    : String 
-   ) return Class_Info_2;
 
    -- TODO(edg): Figure this one out...
    type Class_Info_W is record

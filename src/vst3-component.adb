@@ -90,13 +90,13 @@ package body Vst3.Component is
       case Media_Type is 
          when Audio => 
             case Bus_Direction is
-               when Input => Count := 1;
-               when Output => Count := 1;
+               when Input => Count := Int(Vst3_In_Bus_Count);
+               when Output => Count := Int(Vst3_Out_Bus_Count);
             end case;
          when Event => 
             case Bus_Direction is
-               when Input => Count := 0;
-               when Output => Count := 0;
+               when Input => Count := Int(Vst3_Midi_Input_Bus_Count);
+               when Output => Count := Int(Vst3_Midi_Output_Bus_Count);
             end case;
       end case;
       return Count;
@@ -116,7 +116,17 @@ package body Vst3.Component is
                "Midi Output"));
 
       -- TODO(edg): A more flexible way to do this from the actual plugin?
-      Channel_Count : constant Int := (if Media_Type = Audio then Int(Vst3_Channel_Count) else 0);
+      Channel_Count : constant Int := 
+         (if Media_Type = Audio then 
+            (if Bus_Direction = Input then
+               Int(Vst3_In_Channel_Count) 
+            else
+               Int(Vst3_Out_Channel_Count))
+         elsif Bus_Direction = Input then 
+            Int(Vst3_Midi_Input_Bus_Count) 
+         else 
+            Int(Vst3_Midi_Output_Bus_Count));
+
       -- Default Flags
       Flags : constant Unsigned_32 := 1;
       Info_To_Copy : constant Bus_Info := (

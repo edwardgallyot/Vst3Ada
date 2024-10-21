@@ -47,6 +47,7 @@ package body Vst3.Processor is
       Res : Unsigned_64 := 0;
    begin
       case Channel_Count is
+         when 0 => Res := 0;
          when 1 => Res := Speaker_Flags(Mono);
          when 2 => Res := Speaker_Flags(Left) or Speaker_Flags(Right);
          when others => null;
@@ -81,20 +82,18 @@ package body Vst3.Processor is
       Requested_Speaker : Speaker_Arrangment := Speaker_Flags(Unknown);
       Accepted_Speaker : Speaker_Arrangment;
 
-      -- TODO(ed): We want to be able to get this from the plugin
-      Channel_Count : constant Integer := Vst3_Channel_Count;
    begin
       Vst3_Log("Called Vst3.Processor.Set_Bus_Arrangements");
 
       for I in Inputs_Array'Range loop
          Requested_Speaker := Inputs_Array(I);
-         Accepted_Speaker := Get_Speaker_Flags (Channel_Count);
+         Accepted_Speaker := Get_Speaker_Flags (Vst3_In_Channel_Count);
          Input_Ok := Input_Ok and (Requested_Speaker = Accepted_Speaker or Requested_Speaker = 0);
       end loop;
 
       for I in Outputs_Array'Range loop
          Requested_Speaker := Outputs_Array(I);
-         Accepted_Speaker := Get_Speaker_Flags (Channel_Count);
+         Accepted_Speaker := Get_Speaker_Flags (Vst3_Out_Channel_Count);
          Output_Ok := Output_Ok and (Requested_Speaker = Accepted_Speaker or Requested_Speaker = 0);
       end loop;
 
@@ -102,20 +101,18 @@ package body Vst3.Processor is
    end Set_Bus_Arrangements;
 
    function Get_Bus_Arrangements (This : access Vst3_Processor; Bus_Direction : Bus_Directions; Index : Int; Arrangement : access Speaker_Arrangment) return Result is
-      Channel_Count : Integer := Vst3_Channel_Count;
    begin
       Vst3_Log("Called Vst3.Processor.Get_Bus_Arrangements");
-      -- Zero based indexing for a mono bus...
       if Index > 0 then
          return False;
       end if;
 
       case Bus_Direction is 
-         when Output => Arrangement.all := Get_Speaker_Flags (Channel_Count);
-         when Input => Arrangement.all := Get_Speaker_Flags (Channel_Count);
+         when Output => Arrangement.all := Get_Speaker_Flags (Vst3_Out_Channel_Count);
+         when Input => Arrangement.all := Get_Speaker_Flags (Vst3_In_Channel_Count);
       end case;
 
-      return Ok_True;
+      return (if Arrangement.all = 0 then False else Ok_True);
    end Get_Bus_Arrangements;
 
    function Can_Process_Sample_Size (This : access Vst3_Processor; Size : Sample_Sizes) return Result is
@@ -150,10 +147,10 @@ package body Vst3.Processor is
 
    function Process (This : access Vst3_Processor; Data : access Process_Data) return Result is 
       Bus_Inputs : array (1 .. Data.Num_Inputs) of Audio_Bus_Buffers with Import;
-      for Bus_Inputs'Address use Data.Inputs.all'Address;
+      for Bus_Inputs'Address use (if Data.Num_Inputs > 0 then Data.Inputs.all'Address else Null_Address);
 
       Bus_Outputs : array (1 .. Data.Num_Outputs) of Audio_Bus_Buffers with Import;
-      for Bus_Outputs'Address use Data.Outputs.all'Address;
+      for Bus_Outputs'Address use (if Data.Num_Outputs > 0 then Data.Outputs.all'Address else Null_Address);
    begin
       -- NOTE(edg): We don't need to spam the audio callback
       for Bus_Input of Bus_Inputs loop
@@ -189,7 +186,7 @@ package body Vst3.Processor is
                   end if;
 
                   for Channel in Output_Channels'Range(1) loop
-                     Output_Channels(Channel, Sample) := Out_Sample;
+                     Output_Channels (Channel, Sample) := Out_Sample;
                   end loop;
 
                end;
