@@ -2,6 +2,7 @@
 with System.Atomic_Counters; use System.Atomic_Counters;
 with Interfaces.C; use Interfaces.C;
 with System; use System;
+with Ada.Numerics; use Ada.Numerics;
 
 package Vst3.Processor is 
    type Process_Modes is 
@@ -200,12 +201,18 @@ package Vst3.Processor is
    end record
    with Convention => C_Pass_By_Copy;  
 
+   type Channel_Data_32 is access Float;
+   type Channel_Access_32 is access Channel_Data_32;
+   
+   type Channel_Data_64 is access Long_Float;
+   type Channel_Access_64 is access Channel_Data_64;
+
    type Channel_Buffers ( Sample_Size : Sample_Sizes := Sample_32) is record
       case Sample_Size is
          when Sample_32 =>
-            Channel_Buffers_32 : System.Address;
+            Channel_Buffers_32 : Channel_Access_32;
          when Sample_64 =>
-            Channel_Buffers_64 : System.Address;
+            Channel_Buffers_64 : Channel_Access_64;
       end case;
    end record
    with Convention => C_Pass_By_Copy,
@@ -355,10 +362,13 @@ package Vst3.Processor is
       Get_Tail_Samples        => Get_Tail_Samples'Access
    );
 
+   subtype Radians is Long_Float range (-Pi / 2.0) .. (Pi / 2.0);
+
    type Vst3_Processor is record 
       V_Table     : access constant Processor_V_Table := Table'Access;
       Ref_Count   : aliased Atomic_Unsigned           := 0;
-      Sample_Rate : Long_Float;
+      Sample_Rate : Float;
       Block_Size  : Integer;
+      Sin_Phase   : Float;
    end record;
 end Vst3.Processor;

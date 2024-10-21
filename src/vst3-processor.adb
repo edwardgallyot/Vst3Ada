@@ -1,3 +1,5 @@
+with Ada.Numerics.Discrete_Random;
+with Ada.Numerics.Generic_Elementary_Functions;
 with Ada.Unchecked_Conversion;
 with System.Atomic_Counters; use System.Atomic_Counters;
 with System; use System;
@@ -9,8 +11,11 @@ with Vst3.Controller; use Vst3.Controller;
 with Vst3.Plugin; use Vst3.Plugin;
 with Interfaces.C; use Interfaces.C;
 with Vst3.Processor;
+with Ada.Numerics.Float_Random; use Ada.Numerics.Float_Random;
+with Ada.Numerics.Elementary_Functions; use Ada.Numerics.Elementary_Functions;
 
 package body Vst3.Processor is
+   G : Generator;
 
    function To_Plugin (Input : access Vst3_Processor) return access Vst3_Plugin is 
       type Vst3_Plugin_Ref is access Vst3_Plugin;
@@ -64,7 +69,7 @@ package body Vst3.Processor is
    function Set_Bus_Arrangements (This : access Vst3_Processor; Inputs : access Speaker_Arrangment; Input_Count : Int; Outputs : access  Speaker_Arrangment; Output_Count : Int) return Result is
       -- NOTE(edg): Excellent answer from dcbst here for converting a known C-Size array
       -- to a strong ada type:
-      -- https://www.reddit.com/r/ada/comments/1cr493e/array_of_access_type/ A
+      -- https://www.reddit.com/r/ada/comments/1cr493e/array_of_access_type/
       Inputs_Array : array (1 .. Input_Count) of Speaker_Arrangment;
       for Inputs_Array'Address use Inputs.all'Address;
 
@@ -130,8 +135,9 @@ package body Vst3.Processor is
    begin
       Vst3_Log("Called Vst3.Processor.Setup_Processing");
       -- TODO(edg): We should use the sample rate and the block size here. 
-      This.Sample_Rate := Setup.Sample_Rate;
+      This.Sample_Rate := Float(Setup.Sample_Rate);
       This.Block_Size  := Integer(Setup.Block_Size);
+      Reset(G);
       return Ok_True;
    end Setup_Processing;
 
@@ -143,8 +149,53 @@ package body Vst3.Processor is
    end Set_Processing;
 
    function Process (This : access Vst3_Processor; Data : access Process_Data) return Result is 
+      Bus_Inputs : array (1 .. Data.Num_Inputs) of Audio_Bus_Buffers with Import;
+      for Bus_Inputs'Address use Data.Inputs.all'Address;
+
+      Bus_Outputs : array (1 .. Data.Num_Outputs) of Audio_Bus_Buffers with Import;
+      for Bus_Outputs'Address use Data.Outputs.all'Address;
    begin
       -- NOTE(edg): We don't need to spam the audio callback
+      for Bus_Input of Bus_Inputs loop
+         declare 
+            Input_Channels : array (1 .. Bus_Input.Num_Channels, 1 .. Data.Num_Samples) of Float;
+            for Input_Channels'Address use Bus_Input.Buffers.Channel_Buffers_32.all.all'Address;
+         begin
+            for Channel in Input_Channels'Range(1) loop
+               for Sample in Input_Channels'Range(2) loop 
+                  Input_Channels(Channel, Sample) := 0.0;
+                  null;
+               end loop;
+            end loop;
+         end;
+      end loop;
+
+      for Bus_Output of Bus_Outputs loop
+         declare 
+            Output_Channels : array (1 .. Bus_Output.Num_Channels, 1 .. Data.Num_Samples) of Float;
+            for Output_Channels'Address use Bus_Output.Buffers.Channel_Buffers_32.all.all'Address;
+
+            Sin_Delta : constant Float := (400.0 / This.Sample_Rate) * 2.0 * Pi;
+         begin
+
+            for Sample in Output_Channels'Range(2) loop 
+               This.Sin_Phase := (This.Sin_Phase + Sin_Delta);
+               declare
+                  Out_Sample : Float := Sin (This.Sin_Phase);
+               begin
+
+                  if This.Sin_Phase >= 2.0 * Pi then 
+                     This.Sin_Phase := This.Sin_Phase - (2.0 * Pi);
+                  end if;
+
+                  for Channel in Output_Channels'Range(1) loop
+                     Output_Channels(Channel, Sample) := Out_Sample;
+                  end loop;
+
+               end;
+            end loop;
+         end;
+      end loop;
       return Ok_True;
    end Process;
 
