@@ -1,47 +1,12 @@
 
 with System.Atomic_Counters; use System.Atomic_Counters;
 with Interfaces.C; use Interfaces.C; 
+with Vst3.Processor; use Vst3.Processor;
 
 package Vst3.Controller is 
    type Vst3_Controller;
 
    Controller_Id : constant TUID := Make_TUID(16#DCD7BBE3#, 16#7742448D#, 16#A874AACC#, 16#979C759E#);
-
-   type Parameter_Flag_Option is (
-      NoFlags,
-      CanAutomate,
-      IsReadOnly,
-      IsWrapAround,
-      IsList,
-      IsHidden,
-      IsProgramChange,
-      IsBypass
-   );
-
-   type Parameter_Flag_Options is array(Parameter_Flag_Option) of Unsigned_32;
-   Parameter_Flags : Parameter_Flag_Options := (
-      NoFlags           => 0,
-      CanAutomate       => 1,
-      IsReadOnly        => Shift_Right(1, 1),
-      IsWrapAround      => Shift_Right(1, 2),
-      IsList            => Shift_Right(1, 3),
-      IsHidden          => Shift_Right(1, 4),
-      IsProgramChange   => Shift_Right(1, 15),
-      IsBypass          => Shift_Right(1, 16)
-   );
-
-
-   type Parameter_Info is record
-      Id : aliased Param_Id;
-      Title : aliased C_Wide_String_128;
-      Short_Title : aliased C_Wide_String_128;
-      Units : aliased C_Wide_String_128; 
-      Step_Count : aliased Int;  
-      Default_Normalised_Value: aliased Param_Value;
-      Unit_Id : aliased Int;
-      Flags : aliased Int; 
-   end record
-   with Convention => C_Pass_By_Copy;  
 
    type Controller_V_Table is record
       Query_Interface            : access function (This : access Vst3_Controller; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
@@ -167,11 +132,17 @@ package Vst3.Controller is
       Set_Component_Handler      => Set_Component_Handler'Access,
       Create_View                => Create_View'Access
    );
+   
+   type Parameter_Values is array (Parameter_Type) of Param_Value;
+
 
    type Vst3_Controller is record
-      V_Table     : access constant Controller_V_Table := Table'Access;
-      Ref_Count   : aliased Atomic_Unsigned := 0;
-      Dummy       : Param_Value;
+      V_Table           : access constant Controller_V_Table := Table'Access;
+      Ref_Count         : aliased Atomic_Unsigned := 0;
+      Parameter_Cache   : Parameter_Values := (
+         Gain => Parameter_Infos(Gain).Default_Normalised_Value,
+         Bypass => Parameter_Infos(Bypass).Default_Normalised_Value
+      );
    end record
    with Convention => C_Pass_By_Copy;
 end Vst3.Controller;

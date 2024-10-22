@@ -17,6 +17,8 @@ project Vst3Ada is
          "-fvisibility=hidden",
          "-gnatf",
          "-gnat2022",
+         "-gnatd_F",
+         "-O3",
          "-g");
    end Compiler;
 

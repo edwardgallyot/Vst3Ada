@@ -1,4 +1,3 @@
-with Ada.Numerics.Discrete_Random;
 with Ada.Numerics.Generic_Elementary_Functions;
 with Ada.Unchecked_Conversion;
 with System.Atomic_Counters; use System.Atomic_Counters;
@@ -11,11 +10,9 @@ with Vst3.Controller; use Vst3.Controller;
 with Vst3.Plugin; use Vst3.Plugin;
 with Interfaces.C; use Interfaces.C;
 with Vst3.Processor;
-with Ada.Numerics.Float_Random; use Ada.Numerics.Float_Random;
 with Ada.Numerics.Elementary_Functions; use Ada.Numerics.Elementary_Functions;
 
 package body Vst3.Processor is
-   G : Generator;
 
    function To_Plugin (Input : access Vst3_Processor) return access Vst3_Plugin is 
       type Vst3_Plugin_Ref is access Vst3_Plugin;
@@ -134,7 +131,6 @@ package body Vst3.Processor is
       -- TODO(edg): We should use the sample rate and the block size here. 
       This.Sample_Rate := Float(Setup.Sample_Rate);
       This.Block_Size  := Integer(Setup.Block_Size);
-      Reset(G);
       return Ok_True;
    end Setup_Processing;
 
@@ -195,6 +191,7 @@ package body Vst3.Processor is
       end loop;
       return Ok_True;
    end Process;
+
 
    function Get_Tail_Samples (This : access Vst3_Processor) return Unsigned is
    begin

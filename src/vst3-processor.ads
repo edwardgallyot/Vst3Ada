@@ -1,4 +1,3 @@
--- TODO(edg): Implement this!
 with System.Atomic_Counters; use System.Atomic_Counters;
 with Interfaces.C; use Interfaces.C;
 with System; use System;
@@ -40,7 +39,6 @@ package Vst3.Processor is
       Left  => 1,
       Right => Shift_Left (1, 1),
       Mono  => Shift_Left (1, 19));
-
    type Param_Value_Queue_V_Table is record
       Query_Interface  : access function (This : Address; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
       Add_Ref          : access function (This : Address) return Unsigned with Convention => C;
@@ -65,7 +63,7 @@ package Vst3.Processor is
       Get_Parameter_Data   : access function (This : Address; Index : Int) return access Param_Value_Queue;
       Add_Parameter_Data   : access function (This : Address; Id : access Param_Id; Index : access Int) return access Param_Value_Queue;
    end record
-   with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:3401
+   with Convention => C_Pass_By_Copy; 
 
    type Parameter_Changes is record
       V_Table : access Parameter_Changes_V_Table;
@@ -302,6 +300,39 @@ package Vst3.Processor is
    end record
    with Convention => C_Pass_By_Copy;
 
+   type Parameter_Type is (
+      Bypass,
+      Gain);
+
+   for Parameter_Type use (
+      Bypass => 0,
+      Gain => 1);
+
+   type Parameter_List is array (Parameter_Type) of Parameter_Info;
+   Parameter_Infos : Parameter_List := (
+
+      Bypass => (
+         Id => 0,
+         Title => To_C ("Bypass"),
+         Short_Title => To_C("Byps"),
+         Units => To_C (""),
+         Step_Count => 1,
+         Default_Normalised_Value => 1.0,
+         Unit_Id => 0,
+         Flags => Int(Parameter_Flags(IsBypass) or Parameter_Flags(CanAutomate))
+      ),
+
+      Gain => (
+         Id => 1,
+         Title => To_C ("Gain"),
+         Short_Title => To_C("Gain"),
+         Units => To_C("dB"),
+         Step_Count => 1024,
+         Default_Normalised_Value => 1.0,
+         Unit_Id => 0,
+         Flags => Int(Parameter_Flags(CanAutomate))
+      ));
+
    function Get_Speaker_Flags (Channel_Count : Integer) return Unsigned_64;
 
    function Query_Interface (This : access Vst3_Processor; Interface_Id : TUID; Obj : access Address) 
@@ -362,8 +393,6 @@ package Vst3.Processor is
       Get_Tail_Samples        => Get_Tail_Samples'Access
    );
 
-   subtype Radians is Long_Float range (-Pi / 2.0) .. (Pi / 2.0);
-
    type Vst3_Processor is record 
       V_Table     : access constant Processor_V_Table := Table'Access;
       Ref_Count   : aliased Atomic_Unsigned           := 0;
@@ -371,4 +400,5 @@ package Vst3.Processor is
       Block_Size  : Integer;
       Sin_Phase   : Float;
    end record;
+
 end Vst3.Processor;

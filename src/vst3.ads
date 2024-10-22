@@ -29,6 +29,44 @@ package Vst3 is
    -- NOTE(edg): WIN32: This may not work on win32 see vst3_c_api.h:40
    function Make_TUID (One : Unsigned_32; Two : Unsigned_32; Three : Unsigned_32; Four : Unsigned_32) return TUID;
 
+   subtype Param_Id is Unsigned; 
+   subtype Param_Value is Long_Float;
+
+   type Parameter_Flag_Option is (
+      NoFlags,
+      CanAutomate,
+      IsReadOnly,
+      IsWrapAround,
+      IsList,
+      IsHidden,
+      IsProgramChange,
+      IsBypass
+   );
+
+   type Parameter_Flag_Options is array(Parameter_Flag_Option) of Unsigned_32;
+   Parameter_Flags : Parameter_Flag_Options := (
+      NoFlags           => 0,
+      CanAutomate       => 1,
+      IsReadOnly        => Shift_Right(1, 1),
+      IsWrapAround      => Shift_Right(1, 2),
+      IsList            => Shift_Right(1, 3),
+      IsHidden          => Shift_Right(1, 4),
+      IsProgramChange   => Shift_Right(1, 15),
+      IsBypass          => Shift_Right(1, 16)
+   );
+
+   type Parameter_Info is record
+      Id : aliased Param_Id;
+      Title : aliased C_Wide_String_128;
+      Short_Title : aliased C_Wide_String_128;
+      Units : aliased C_Wide_String_128; 
+      Step_Count : aliased Int;  
+      Default_Normalised_Value: aliased Param_Value;
+      Unit_Id : aliased Int;
+      Flags : aliased Int; 
+   end record
+   with Convention => C_Pass_By_Copy;  
+
    type Io_Modes is (Simple, Advanced, Offline_Processing) with Convention => C; 
    for Io_Modes use (Simple => 0, Advanced => 1, Offline_Processing => 2 );
 
@@ -57,9 +95,6 @@ package Vst3 is
       Channel     : aliased Int;  
    end record
    with Convention => C_Pass_By_Copy;  -- ./vst3_c_api.h:1704
-
-   subtype Param_Id is Unsigned; 
-   subtype Param_Value is Long_Float;
 
    -- NOTE(edg): WIN32: This may not work see vst3_c_api.h:223
    type Result is (
