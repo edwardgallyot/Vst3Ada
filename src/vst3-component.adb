@@ -32,21 +32,25 @@ package body Vst3.Component is
 
    function Query_Interface (This : access Vst3_Component;  Interface_Id: TUID; Obj : access Address) return Result is 
       Plugin : constant access Vst3_Plugin := To_Plugin(Vst3_Component_Ref(This));
+      Unused : Unsigned;
    begin
       Vst3_Log("Called Vst3.Component.Query_Interface");
 
       if Interface_Id = Component_Id then
          Obj.all := Plugin.Component'Address;
+         Unused := Add_Ref (Plugin.Component'Access);
          return Ok_True;
       end if;
 
       if Interface_Id = Controller_Id then
          Obj.all := Plugin.Controller'Address;
+         Unused := Add_Ref (Plugin.Controller'Access);
          return Ok_True;
       end if;
 
       if Interface_Id = Processor_Id then
          Obj.all := Plugin.Processor'Address;
+         Unused := Add_Ref (Plugin.Processor'Access);
          return Ok_True;
       end if;
 
@@ -115,7 +119,6 @@ package body Vst3.Component is
             else
                "Midi Output"));
 
-      -- TODO(edg): A more flexible way to do this from the actual plugin?
       Channel_Count : constant Int := 
          (if Media_Type = Audio then 
             (if Bus_Direction = Input then

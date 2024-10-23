@@ -70,7 +70,7 @@ package Vst3.Factory is
       return Unsigned
       with Convention => C;
 
-   function Query_Interface (This : access Vst3_Factory; Iid : TUID; Obj : access Address) 
+   function Query_Interface (This : access Vst3_Factory; Interface_Id : TUID; Obj : access Address) 
       return Result
       with Convention => C;
 

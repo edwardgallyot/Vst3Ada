@@ -1,4 +1,4 @@
-
+with Vst3.View; use Vst3.View;
 with System.Atomic_Counters; use System.Atomic_Counters;
 with Interfaces.C; use Interfaces.C; 
 with Vst3.Processor; use Vst3.Processor;
@@ -9,7 +9,7 @@ package Vst3.Controller is
    Controller_Id : constant TUID := Make_TUID(16#DCD7BBE3#, 16#7742448D#, 16#A874AACC#, 16#979C759E#);
 
    type Controller_V_Table is record
-      Query_Interface            : access function (This : access Vst3_Controller; Interface_Id : TUID; Obj : access Address) return Result with Convention => C;
+      Query_Interface            : access function (This : access Vst3_Controller; Interface_Id : access TUID; Obj : access Address) return Result with Convention => C;
       Add_Ref                    : access function (This : access Vst3_Controller) return Unsigned with Convention => C;
       Release                    : access function (This : access Vst3_Controller) return Unsigned with Convention => C;
       Initialise                 : access function (This : access Vst3_Controller; Context : access F_Unknown) return Result with Convention => C;
@@ -34,13 +34,13 @@ package Vst3.Controller is
       Set_Component_Handler      : access function (This : access Vst3_Controller; Handler : access System.Address) return Result with Convention => C;
       -- TODO(edg): Platform specific UI?
       -- Create_View : access function (arg1 : System.Address; arg2 : Steinberg_FIDString) return access Steinberg_IPlugView;  -- ./vst3_c_api.h:2526
-      Create_View                : access function (This : access Vst3_Controller; name : TUID) return access System.Address with Convention => C;
+      Create_View                : access function (This : access Vst3_Controller; name : TUID) return access Vst3_View with Convention => C;
    end record
    with Convention => C_Pass_By_Copy;
 
    type Param_Display is digits 4 range Param_Value'First .. Param_Value'Last;
 
-   function Query_Interface (This : access Vst3_Controller; Interface_Id : TUID; Obj : access Address) 
+   function Query_Interface (This : access Vst3_Controller; Interface_Id : access TUID; Obj : access Address) 
       return Result
       with Convention => C;
 
@@ -109,7 +109,7 @@ package Vst3.Controller is
       with Convention => C;
 
    function Create_View (This : access Vst3_Controller; name : TUID) 
-      return access System.Address
+      return access Vst3_View 
       with Convention => C;
 
    Table : aliased constant Controller_V_Table := (
@@ -135,7 +135,6 @@ package Vst3.Controller is
    
    type Parameter_Values is array (Parameter_Type) of Param_Value;
 
-
    type Vst3_Controller is record
       V_Table           : access constant Controller_V_Table := Table'Access;
       Ref_Count         : aliased Atomic_Unsigned := 0;
@@ -143,6 +142,7 @@ package Vst3.Controller is
          Gain => Parameter_Infos(Gain).Default_Normalised_Value,
          Bypass => Parameter_Infos(Bypass).Default_Normalised_Value
       );
+      View              : aliased Vst3_View;
    end record
    with Convention => C_Pass_By_Copy;
 end Vst3.Controller;

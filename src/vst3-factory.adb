@@ -20,14 +20,14 @@ package body Vst3.Factory is
       return Unsigned(This.Ref_Count);
    end Release;
 
-   function Query_Interface (This : access Vst3_Factory; iid : TUID; obj : access Address) return Result is
+   function Query_Interface (This : access Vst3_Factory; Interface_Id : TUID; Obj : access Address) return Result is
    begin
       Vst3_Log("Called Vst3.Factory.Query_Interface");
-      if iid = Plugin_Factory_3_Id or
-         iid = Plugin_Factory_2_Id or
-         iid = Plugin_Factory_Id   or 
-         iid = Unknown_Id          then
-         obj.all := This.all'Address;
+      if Interface_Id = Plugin_Factory_3_Id or
+         Interface_Id = Plugin_Factory_2_Id or
+         Interface_Id = Plugin_Factory_Id   or 
+         Interface_Id = Unknown_Id          then
+         Obj.all := This.all'Address;
          return Ok_True;
       end if;
 

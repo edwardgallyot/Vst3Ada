@@ -147,6 +147,8 @@ package body Vst3.Processor is
 
       Bus_Outputs : array (1 .. Data.Num_Outputs) of Audio_Bus_Buffers with Import;
       for Bus_Outputs'Address use (if Data.Num_Outputs > 0 then Data.Outputs.all'Address else Null_Address);
+
+      pragma Suppress_All;
    begin
       -- NOTE(edg): We don't need to spam the audio callback
       for Bus_Input of Bus_Inputs loop
@@ -157,7 +159,6 @@ package body Vst3.Processor is
             for Channel in Input_Channels'Range(1) loop
                for Sample in Input_Channels'Range(2) loop 
                   Input_Channels(Channel, Sample) := 0.0;
-                  null;
                end loop;
             end loop;
          end;
@@ -182,7 +183,7 @@ package body Vst3.Processor is
                   end if;
 
                   for Channel in Output_Channels'Range(1) loop
-                     Output_Channels (Channel, Sample) := Out_Sample;
+                     Output_Channels (Channel, Sample) := Out_Sample * 0.1;
                   end loop;
 
                end;

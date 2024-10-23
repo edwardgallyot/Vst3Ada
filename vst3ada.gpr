@@ -18,7 +18,6 @@ project Vst3Ada is
          "-gnatf",
          "-gnat2022",
          "-gnatd_F",
-         "-O3",
          "-g");
    end Compiler;
 
